@@ -133,30 +133,33 @@ function outcomeOf(id: string): OutcomeNode | undefined {
 /** Authored short scene label; prompt/text truncation as fallback (§5.1). */
 function shortOf(id: string): string {
   const p = positionOf(id);
-  if (p) return p.shortLabel ?? trunc(p.prompt, 26);
+  if (p) return p.shortLabel ?? trunc(p.prompt, 56);
   const f = factOf(id);
-  if (f) return f.shortLabel ?? trunc(f.text, 26);
+  if (f) return f.shortLabel ?? trunc(f.text, 56);
   const o = outcomeOf(id);
-  if (o) return trunc(o.name, 26);
+  if (o) return o.name;
   return id;
 }
 
-/** Full human phrase for any focus target — crumbs, offers, notices. */
-function targetLabel(t: FocusTarget, max = 70): string {
+/** Full human phrase for any focus target — crumbs, offers, notices. Panel
+ *  text wraps instead of hiding behind an ellipsis; pass max only where a
+ *  surface genuinely cannot wrap. */
+function targetLabel(t: FocusTarget, max?: number): string {
+  const cut = (s: string) => (max === undefined ? s : trunc(s, max));
   switch (t.kind) {
     case 'position':
-      return trunc(positionOf(t.id)?.prompt ?? t.id, max);
+      return cut(positionOf(t.id)?.prompt ?? t.id);
     case 'fact':
-      return trunc(factOf(t.id)?.text ?? t.id, max);
+      return cut(factOf(t.id)?.text ?? t.id);
     case 'outcome':
       return outcomeOf(t.id)?.name ?? t.id;
     case 'edge': {
       const e = S.map.edges.find((x) => x.id === t.id);
-      return e ? trunc(e.whyCopy, max) : 'a connection in the map';
+      return e ? cut(e.whyCopy) : 'a connection in the map';
     }
     case 'rule': {
       const r = S.map.rules.find((x) => x.id === t.id);
-      return r ? trunc(r.lessonCopy, max) : 'what moved beneath you';
+      return r ? cut(r.lessonCopy) : 'what moved beneath you';
     }
     case 'tension': {
       const x = S.map.tensions.find((y) => y.id === t.id);
@@ -342,13 +345,25 @@ function el<K extends keyof SVGElementTagNameMap>(tag: K): SVGElementTagNameMap[
   return document.createElementNS('http://www.w3.org/2000/svg', tag);
 }
 
-function wrapLabel(text: string): string[] {
-  if (text.length <= 15) return [text];
-  const mid = Math.floor(text.length / 2);
-  let cut = text.lastIndexOf(' ', mid);
-  if (cut < 4) cut = text.indexOf(' ', mid);
-  if (cut === -1) return [text];
-  return [text.slice(0, cut), text.slice(cut + 1)];
+/** Balanced word wrap for scene labels — up to three lines; an ellipsis only
+ *  when a label genuinely overflows even that. */
+function wrapLabel(text: string, width = 16, maxLines = 3): string[] {
+  if (text.length <= width) return [text];
+  const lines: string[] = [];
+  let cur = '';
+  for (const w of text.split(/\s+/)) {
+    if (cur !== '' && (cur + ' ' + w).length > width) {
+      lines.push(cur);
+      cur = w;
+    } else {
+      cur = cur === '' ? w : cur + ' ' + w;
+    }
+  }
+  if (cur !== '') lines.push(cur);
+  if (lines.length <= maxLines) return lines;
+  const kept = lines.slice(0, maxLines - 1);
+  kept.push(trunc(lines.slice(maxLines - 1).join(' '), width + 2));
+  return kept;
 }
 
 function makeNode(id: string, kind: NodeKind, short: string, standard = false): void {
@@ -375,7 +390,7 @@ function makeNode(id: string, kind: NodeKind, short: string, standard = false): 
   const name = el('text');
   name.setAttribute('class', 'name');
   name.setAttribute('text-anchor', 'middle');
-  wrapLabel(short).forEach((ln, i) => {
+  wrapLabel(short, 16, 4).forEach((ln, i) => {
     const ts = el('tspan');
     ts.setAttribute('x', '0');
     ts.setAttribute('y', String(44 + i * 14));
@@ -470,20 +485,27 @@ const RELATION_CAPTION: Record<Relation, string> = {
   'speaks-to': 'SPEAKS TO THE ASSUMPTION',
 };
 
+/** Degree bands per relation. Kept disjoint on the circle — feeds' left edge
+ *  (-135° ≡ 225°) must stay clear of evidence's arc or their labels collide. */
 const RELATION_BAND: Record<Relation, [number, number]> = {
-  feeds: [-150, -30],
+  feeds: [-135, -45],
   'rests-on': [30, 150],
   'speaks-to': [30, 150],
-  evidence: [162, 252],
+  evidence: [155, 205],
 };
 
 function caption(text: string, x: number, y: number, cls = 'caption'): void {
   const t = el('text');
   t.setAttribute('class', cls);
-  t.setAttribute('x', String(x));
-  t.setAttribute('y', String(y));
   t.setAttribute('text-anchor', 'middle');
-  t.textContent = text;
+  // Long captions wrap onto a second line rather than truncating.
+  wrapLabel(text, 64, 2).forEach((ln, i) => {
+    const ts = el('tspan');
+    ts.setAttribute('x', String(x));
+    ts.setAttribute('y', String(y + i * 19));
+    ts.textContent = ln;
+    t.appendChild(ts);
+  });
   captionLayer.appendChild(t);
 }
 
@@ -548,7 +570,7 @@ function overviewTargets(dimTo: number, highlight: ReadonlySet<string>): void {
   }
   for (const q of S.map.questions) {
     const cx = QX.get(q.id);
-    if (cx !== undefined) caption(trunc(q.title, 60), cx, 42, 'qcaption');
+    if (cx !== undefined) caption(q.title, cx, 42, 'qcaption');
   }
 }
 
@@ -666,8 +688,10 @@ function updateSceneClasses(res: ReduceResult): void {
 // Animation loop
 // ---------------------------------------------------------------------------
 
+const REDUCED_MOTION = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
 function tick(): void {
-  const k = 0.16;
+  const k = REDUCED_MOTION ? 1 : 0.16;
   for (const n of nodes.values()) {
     n.x += (n.tx - n.x) * k; n.y += (n.ty - n.y) * k;
     n.s += (n.ts - n.s) * k; n.o += (n.to - n.o) * k;
@@ -709,7 +733,7 @@ function neededAssumption(oid: string, pid: string): { text: string; needsOption
     const cond = r.when.find((c) => c.position === pid);
     if (cond && eff !== 0) score.set(cond.option, (score.get(cond.option) ?? 0) + eff);
   }
-  if (score.size === 0) return { text: trunc(p.prompt, 80), needsOption: null };
+  if (score.size === 0) return { text: p.prompt, needsOption: null };
   const ranked = [...score.entries()].sort((a, b) => b[1] - a[1]);
   const best = ranked[0]!;
   if (best[1] > 0) {
@@ -746,6 +770,8 @@ function sync(): void {
   retarget();
   updateSceneClasses(lastResult);
   renderHeader();
+  renderBanner();
+  renderRail();
   renderPanel(lastResult);
   renderArrival();
 }
@@ -762,7 +788,7 @@ function chip(t: FocusTarget, label?: string, extraClass = ''): string {
       ? 'kind-standard'
       : `kind-${t.kind}`;
   const why = S.session?.focus && n ? edgeWhy(S.session.focus.id, t.id) : '';
-  return `<span class="chip ${kindClass} ${extraClass}" data-act="unpack" data-kind="${t.kind}" data-id="${esc(t.id)}"${
+  return `<span class="chip ${kindClass} ${extraClass}" role="button" tabindex="0" data-act="unpack" data-kind="${t.kind}" data-id="${esc(t.id)}"${
     why ? ` title="${esc(why)}"` : ''
   }>${esc(label ?? targetLabel(t))}</span>`;
 }
@@ -789,7 +815,7 @@ function reactRow(target: FocusTarget): string {
   return `<h3>Your reaction</h3><div class="chiprow">${(Object.keys(REACTION_LABEL) as Reaction[])
     .map(
       (r) =>
-        `<span class="chip ${last?.reaction === r ? 'selected' : ''}" data-act="react" data-r="${r}">${REACTION_LABEL[r]}</span>`,
+        `<span class="chip ${last?.reaction === r ? 'selected' : ''}" role="button" tabindex="0" data-act="react" data-r="${r}">${REACTION_LABEL[r]}</span>`,
     )
     .join('')}</div>`;
 }
@@ -808,10 +834,10 @@ function frameOverview(res: ReduceResult): string {
         )
         .join('')}
       <div class="legend">
-        <span><span class="dot" style="background:var(--outcome)"></span>where it can land</span>
-        <span><span class="dot" style="background:var(--position)"></span>belief fork</span>
-        <span><span class="dot" style="background:var(--standard)"></span>epistemic standard</span>
-        <span><span class="dot" style="background:var(--fact)"></span>evidence</span>
+        <span><span class="dot round" style="color:var(--outcome)"></span>where it can land</span>
+        <span><span class="dot" style="color:var(--position)"></span>belief fork</span>
+        <span><span class="dot" style="color:var(--standard)"></span>epistemic standard</span>
+        <span><span class="dot diamond" style="color:var(--fact)"></span>evidence</span>
       </div>
       <div class="muted small" style="margin-top:8px">
         Glowing evidence is live in your traversal; green-ringed forks are ones you’ve answered.
@@ -833,7 +859,7 @@ function frameOverview(res: ReduceResult): string {
         .map(
           (o) => `<div class="obar ${o.id === topId ? 'top' : ''}">
             <div class="oname">
-              <span class="chip kind-outcome" data-act="unpack" data-kind="outcome" data-id="${esc(o.id)}">${esc(o.name)}</span>
+              <span class="chip kind-outcome" role="button" tabindex="0" data-act="unpack" data-kind="outcome" data-id="${esc(o.id)}">${esc(o.name)}</span>
               ${costDots(o.assumptionCost)}
             </div>
             <div class="track"><div class="fill" style="width:${((cred[o.id] ?? 0) * 100).toFixed(1)}%"></div></div>
@@ -845,7 +871,7 @@ function frameOverview(res: ReduceResult): string {
 
   const rules = res.firedRules.length
     ? `<h3>What moved beneath you</h3><div class="chiprow">${res.firedRules
-        .map((r) => chip({ kind: 'rule', id: r.id }, trunc(r.lessonCopy, 48)))
+        .map((r) => chip({ kind: 'rule', id: r.id }, r.lessonCopy, 'block'))
         .join('')}</div>`
     : '';
 
@@ -895,7 +921,7 @@ function framePosition(p: PositionNode, res: ReduceResult): string {
     ? `<h3>Where do you stand?</h3><div class="chiprow">${p.options
         .map(
           (o) =>
-            `<span class="chip ${chosen === o.id ? 'selected' : ''}" data-act="answer" data-id="${esc(p.id)}" data-opt="${esc(o.id)}">${esc(o.label)}</span>`,
+            `<span class="chip ${chosen === o.id ? 'selected' : ''}" role="button" tabindex="0" data-act="answer" data-id="${esc(p.id)}" data-opt="${esc(o.id)}">${esc(o.label)}</span>`,
         )
         .join('')}</div>`
     : `<h3>The fork</h3><div class="chiprow">${p.options
@@ -931,7 +957,8 @@ function framePosition(p: PositionNode, res: ReduceResult): string {
     ${options}
     ${evidence}
     ${pointsTo}
-    ${carrying}`;
+    ${carrying}
+    ${reactRow({ kind: 'position', id: p.id })}`;
 }
 
 function frameFact(f: FactNode, res: ReduceResult): string {
@@ -953,7 +980,7 @@ function frameFact(f: FactNode, res: ReduceResult): string {
     ? `<h3>Where you hold it</h3><div class="chiprow">${(Object.keys(STANCE_LABEL) as FactStance[])
         .map(
           (st) =>
-            `<span class="chip ${stance === st ? 'selected' : ''}" data-act="stance" data-id="${esc(f.id)}" data-stance="${st}">${STANCE_LABEL[st]}</span>`,
+            `<span class="chip ${stance === st ? 'selected' : ''}" role="button" tabindex="0" data-act="stance" data-id="${esc(f.id)}" data-stance="${st}">${STANCE_LABEL[st]}</span>`,
         )
         .join('')}</div>`
     : '';
@@ -1082,7 +1109,7 @@ function frameRule(ruleId: string): string {
     ${redirect}
     <h3>It fires from</h3>
     <div class="chiprow">${r.when
-      .map((c) => chip({ kind: 'position', id: c.position }, `${shortOf(c.position)}: ${trunc(optionLabel(c.position, c.option), 40)}`))
+      .map((c) => chip({ kind: 'position', id: c.position }, `${shortOf(c.position)}: ${optionLabel(c.position, c.option)}`))
       .join('')}</div>`;
 }
 
@@ -1093,7 +1120,7 @@ function frameTension(tensionId: string): string {
     <h2 style="font-weight:500; font-size:0.95rem">${esc(t.copy)}</h2>
     <h3>The answers in friction</h3>
     <div class="chiprow">${t.between
-      .map((c) => chip({ kind: 'position', id: c.position }, trunc(optionLabel(c.position, c.option), 50)))
+      .map((c) => chip({ kind: 'position', id: c.position }, optionLabel(c.position, c.option)))
       .join('')}</div>
     ${reactRow({ kind: 'tension', id: t.id })}`;
 }
@@ -1146,15 +1173,64 @@ function frameGap(id: string, res: ReduceResult): string {
 }
 
 // ---------------------------------------------------------------------------
-// Chrome — notice, carryback, promises, guide rail, commit bar.
+// Chrome — register banner (session voice), carryback strip, journey rail
+// (the walk made visible, Interaction §10.3).
 // ---------------------------------------------------------------------------
+
+/** One-line notch label (§10.3 hard cap) — authored shortLabels, never prompts. */
+function shortTargetLabel(t: FocusTarget): string {
+  if (isNodeKind(t)) return shortOf(t.id);
+  switch (t.kind) {
+    case 'question':
+      return S.map.questions.find((q) => q.id === t.id)?.title ?? 'the question';
+    case 'gap':
+      return t.id === 'direction' ? 'the direction gap' : 'the confidence gap';
+    case 'rule':
+      return 'what moved beneath you';
+    case 'tension':
+      return 'two answers in friction';
+    default:
+      return 'a connection in the map';
+  }
+}
+
+/** Forks answered more than once — the user's own wavering, read from the log. */
+function waveringIds(): Set<string> {
+  const counts = new Map<string, number>();
+  for (const m of S.log) {
+    if (m.type === 'answer') counts.set(m.position, (counts.get(m.position) ?? 0) + 1);
+  }
+  return new Set([...counts].filter(([, n]) => n >= 2).map(([id]) => id));
+}
+
+/** Latest friction reaction the user left on a fork, if any. */
+function flaggedReaction(pid: string): Reaction | null {
+  const session = S.session;
+  if (!session) return null;
+  const key = targetKey({ kind: 'position', id: pid });
+  const last = [...session.reactions].reverse().find((r) => targetKey(r.target) === key);
+  return last && (last.reaction === 'unconvinced' || last.reaction === 'hadnt-considered')
+    ? last.reaction
+    : null;
+}
+
+/** Post-commit only (§10.3 seal split): the fork whose answer moves the landing most. */
+function carryingId(): string | null {
+  if (!revealed()) return null;
+  const ws = workspace();
+  let top: ReturnType<typeof sensitivity>[number] | null = null;
+  for (const e of sensitivity(S.map, ws.answers, ws.stances)) {
+    if (!top || e.shift > top.shift) top = e;
+  }
+  return top && top.shift > 0.001 ? top.position : null;
+}
 
 function noticeHtml(): string {
   const n = S.session?.notice;
   if (!n) return '';
   if (n.kind === 'promises-abandoned') {
     return `<div class="notice">We stepped back to the whole map — open promises were let go: ${n.abandoned
-      .map((t) => esc(targetLabel(t, 50)))
+      .map((t) => esc(targetLabel(t)))
       .join(' · ')}.</div>`;
   }
   return `<div class="notice">Leaving the sandbox set aside ${n.answers} provisional ${n.answers === 1 ? 'answer' : 'answers'} and ${n.stances} provisional ${n.stances === 1 ? 'stance' : 'stances'} — your record is unchanged.</div>`;
@@ -1168,7 +1244,7 @@ function carrybackHtml(): string {
     parts.push(
       a.option === null
         ? `you cleared where you stood on “${esc(shortOf(a.position))}”`
-        : `you took a position — “${esc(trunc(optionLabel(a.position, a.option), 60))}”`,
+        : `you took a position — “${esc(optionLabel(a.position, a.option))}”`,
     );
   }
   for (const st of c.stancesChanged) {
@@ -1190,17 +1266,6 @@ function carrybackHtml(): string {
   return `<div class="carryback">While you were away: ${parts.length ? parts.join(' · ') : 'nothing changed'}.</div>`;
 }
 
-function crumbsHtml(): string {
-  const stack = S.session?.stack ?? [];
-  if (!stack.length) return '';
-  return `<div class="crumbs">${stack
-    .map(
-      (f, i) =>
-        `<span class="crumb" data-act="pop-to" data-i="${i}">⏎ we’ll come back to: ${esc(targetLabel(f.origin, 56))}</span>`,
-    )
-    .join('')}</div>`;
-}
-
 function promiseHtml(): string {
   const session = S.session!;
   if (session.mode !== 'mirror') return '';
@@ -1220,11 +1285,11 @@ function offerLabel(o: GuideOffer): string {
   const m = o.move;
   switch (m.type) {
     case 'focus':
-      return m.target ? targetLabel(m.target, 64) : 'step back to the whole map';
+      return m.target ? targetLabel(m.target) : 'step back to the whole map';
     case 'push':
-      return targetLabel(m.target, 64);
+      return targetLabel(m.target);
     case 'present-fact':
-      return `look at: ${targetLabel({ kind: 'fact', id: m.fact }, 56)}`;
+      return `look at: ${targetLabel({ kind: 'fact', id: m.fact })}`;
     case 'pop':
       return 'return to the open promise';
     default:
@@ -1232,38 +1297,124 @@ function offerLabel(o: GuideOffer): string {
   }
 }
 
-function guideRail(): string {
-  const session = S.session!;
-  // Rank order is the policy's, untouched (curation risk, §7); the renderer only
-  // drops offers pointing at the frame already on screen — dedup, not reordering.
-  currentOffers = guideOffers(S.map, session)
-    .filter((o) => !(o.move.type === 'focus' && o.move.target !== null && sameTarget(session.focus, o.move.target)))
-    .slice(0, 4);
-  const offers = currentOffers
-    .map(
-      (o, i) => `<button class="offer" data-act="offer" data-i="${i}">
-        <div class="olabel">${esc(offerLabel(o))}</div>
-        <div class="owhy">${esc(o.why)}</div>
-      </button>`,
-    )
-    .join('');
-  const toolbar = `<div class="chiprow" style="margin-top:4px">
-    ${session.stack.length ? `<button data-act="pop">◀ return</button>` : ''}
-    ${session.focus ? `<button data-act="zoom-out">step back to the whole map</button>` : ''}
-    <button class="ghostbtn" data-act="start-over">start over</button>
-  </div>`;
-  return `<div class="guide"><h3>The guide suggests</h3>${offers || `<div class="muted small">Nothing pressing — wander freely.</div>`}${toolbar}</div>`;
+/** One-line offer label for a rail notch; the full phrase + why ride the title. */
+function shortOfferLabel(o: GuideOffer): string {
+  const m = o.move;
+  switch (m.type) {
+    case 'focus':
+      return m.target ? shortTargetLabel(m.target) : 'step back to the whole map';
+    case 'push':
+      return shortTargetLabel(m.target);
+    case 'present-fact':
+      return `look at: ${shortOf(m.fact)}`;
+    case 'pop':
+      return 'return to the open promise';
+    default:
+      return m.type;
+  }
 }
 
-function commitBar(): string {
-  const session = S.session!;
-  if (session.mode !== 'mirror' || revealed()) return '';
-  const answered = Object.keys(session.record.answers).length;
-  const total = S.map.positions.length;
-  return `<div class="card" style="margin-top:6px">
-    <button class="primary" data-act="commit">Commit answers — see where you land</button>
-    <div class="muted small" style="margin-top:6px">${'●'.repeat(answered)}${'○'.repeat(Math.max(0, total - answered))} answered — commit whenever you’re ready; untouched forks stay at default.</div>
-  </div>`;
+function renderRail(): void {
+  const rail = document.getElementById('rail')!;
+  const session = S.session;
+  if (!session) {
+    rail.hidden = true;
+    rail.innerHTML = '';
+    return;
+  }
+
+  // Wayfinding glyphs.
+  const tools = [
+    session.stack.length
+      ? `<button class="notch" data-act="pop" title="return to the open promise"><span class="glyph">◀</span><span class="rlabel">return to the open promise</span></button>`
+      : '',
+    session.focus
+      ? `<button class="notch" data-act="zoom-out" title="step back to the whole map"><span class="glyph">▦</span><span class="rlabel">step back to the whole map</span></button>`
+      : '',
+    `<button class="notch" data-act="start-over" title="start over"><span class="glyph">↺</span><span class="rlabel">start over</span></button>`,
+  ].join('');
+
+  // AHEAD — rank order is the policy's, untouched (curation risk, §7); the
+  // renderer only drops offers pointing at the frame already on screen.
+  currentOffers = guideOffers(S.map, session)
+    .filter((o) => !(o.move.type === 'focus' && o.move.target !== null && sameTarget(session.focus, o.move.target)))
+    .slice(0, 3);
+  const offers = currentOffers
+    .map(
+      (o, i) =>
+        `<button class="notch" data-act="offer" data-i="${i}" title="${esc(`${offerLabel(o)} — ${o.why}`)}"><span class="glyph">›</span><span class="rlabel">${esc(shortOfferLabel(o))}</span></button>`,
+    )
+    .join('');
+  const ahead = offers
+    ? `<div class="railcap">the guide suggests</div>${offers}`
+    : `<div class="railcap">wander freely</div>`;
+
+  // HERE.
+  const here = `<div class="notch inert" title="${esc(session.focus ? targetLabel(session.focus) : 'the whole map')}"><span class="glyph">◉</span><span class="rlabel">${esc(
+    session.focus ? shortTargetLabel(session.focus) : 'the whole map',
+  )}</span></div>`;
+
+  // PROMISES — open digressions; a notch click pops back to that promise.
+  const promises = session.stack
+    .map(
+      (f, i) =>
+        `<button class="notch promise-n" data-act="pop-to" data-i="${i}" title="we’ll come back to: ${esc(targetLabel(f.origin))}"><span class="glyph">⏎</span><span class="rlabel">${esc(shortTargetLabel(f.origin))}</span></button>`,
+    )
+    .join('');
+
+  // COVERAGE — one dot per fork; emphasis echoes the user's own signals
+  // pre-commit; credence-derived emphasis joins only after the reveal (§10.3).
+  const ws = workspace();
+  const wav = waveringIds();
+  const carrying = carryingId();
+  const dots = S.map.positions
+    .map((p) => {
+      const flag = flaggedReaction(p.id);
+      const cls = [
+        'dotmark',
+        p.id in ws.answers ? 'answered' : '',
+        wav.has(p.id) ? 'waver' : '',
+        flag ? 'flagged' : '',
+        carrying === p.id ? 'carrying' : '',
+      ]
+        .filter(Boolean)
+        .join(' ');
+      const notes: string[] = [];
+      if (wav.has(p.id)) notes.push('you’ve changed this answer');
+      if (flag) notes.push(`you marked this: ${REACTION_LABEL[flag]}`);
+      if (carrying === p.id) notes.push('this answer is carrying your landing');
+      const title = notes.length ? `${shortOf(p.id)} — ${notes.join(' · ')}` : shortOf(p.id);
+      return `<button class="notch" data-act="rail-focus" data-id="${esc(p.id)}" title="${esc(title)}"><span class="glyph"><span class="${cls}"></span></span><span class="rlabel">${esc(shortOf(p.id))}</span></button>`;
+    })
+    .join('');
+
+  // FOOT — the walk leads down the trail to the inking moment.
+  let foot = '';
+  if (session.mode === 'mirror' && !revealed()) {
+    const answered = Object.keys(session.record.answers).length;
+    const total = S.map.positions.length;
+    foot = `<div class="railfoot"><button class="notch primary" data-act="commit" title="commit whenever you’re ready; untouched forks stay at default"><span class="glyph">✓</span><span class="rlabel">Commit answers — see where you land</span></button><div class="progress rlabel">${'●'.repeat(answered)}${'○'.repeat(Math.max(0, total - answered))}</div></div>`;
+  } else if (revealed()) {
+    foot = `<div class="railfoot"><div class="notch inert" title="the reveal is live"><span class="glyph revealmark">◆</span><span class="rlabel">the reveal is live</span></div></div>`;
+  }
+
+  rail.hidden = false;
+  rail.innerHTML = `${tools}<div class="railsep"></div>${ahead}<div class="railsep"></div>${here}${promises}<div class="railsep"></div><div class="railcap">the forks</div>${dots}${foot}`;
+}
+
+function renderBanner(): void {
+  const reg = document.getElementById('register')!;
+  if (!S.session) {
+    reg.hidden = true;
+    reg.innerHTML = '';
+    return;
+  }
+  const draft = isDraft(S.map)
+    ? `<span class="draftline"><span class="stamp">DRAFT</span>Model-drafted scaffold. No research pass has run and no human has reviewed a word of it.</span>`
+    : '';
+  const html = `${noticeHtml()}${promiseHtml()}${draft}`;
+  reg.hidden = html === '';
+  reg.innerHTML = html;
 }
 
 function draftBanner(): string {
@@ -1277,7 +1428,7 @@ function renderPanel(res: ReduceResult): void {
   const panel = document.getElementById('panel')!;
   const session = S.session;
   if (!session) {
-    panel.innerHTML = draftBanner();
+    panel.innerHTML = '';
     return;
   }
 
@@ -1295,14 +1446,8 @@ function renderPanel(res: ReduceResult): void {
   else frame = frameGap(f.id, res);
 
   panel.innerHTML = `
-    ${draftBanner()}
-    ${noticeHtml()}
-    ${promiseHtml()}
-    ${crumbsHtml()}
     ${carrybackHtml()}
-    <div>${frame}</div>
-    ${commitBar()}
-    ${guideRail()}`;
+    <div>${frame}</div>`;
 }
 
 function renderHeader(): void {
@@ -1400,12 +1545,23 @@ function resetToDoor(map: BeliefMap): void {
   retarget();
   renderHeader();
   document.getElementById('panel')!.innerHTML = '';
+  renderBanner();
+  renderRail();
   renderArrival();
 }
 
 // ---------------------------------------------------------------------------
 // Event wiring — one delegated listener; every act maps to a move (or the door)
 // ---------------------------------------------------------------------------
+
+// Chips and crumbs are spans wearing role="button" — Enter/Space activates them.
+document.body.addEventListener('keydown', (ev) => {
+  if (ev.key !== 'Enter' && ev.key !== ' ') return;
+  const elx = (ev.target as HTMLElement).closest<HTMLElement>('[data-act][role="button"]');
+  if (!elx) return;
+  ev.preventDefault();
+  elx.click();
+});
 
 document.body.addEventListener('click', (ev) => {
   const elx = (ev.target as HTMLElement).closest<HTMLElement>('[data-act]');
@@ -1438,6 +1594,12 @@ document.body.addEventListener('click', (ev) => {
       if (S.session?.focus === null) dispatch({ type: 'focus', target });
       else if (sameTarget(S.session?.focus ?? null, target)) break;
       else dispatch({ type: 'push', target, reason: 'unpack' });
+      break;
+    }
+    case 'rail-focus': {
+      // Rail navigation wanders (plain focus) — it never makes a promise (§10.3).
+      const target: FocusTarget = { kind: 'position', id: elx.dataset['id']! };
+      if (!sameTarget(S.session?.focus ?? null, target)) dispatch({ type: 'focus', target });
       break;
     }
     case 'answer': {

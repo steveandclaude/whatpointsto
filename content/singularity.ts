@@ -44,6 +44,7 @@ export const singularityMap: BeliefMap = {
       scope: ['S'],
       prompt:
         'Do the last decade’s capability-scaling trends extrapolate through the next one?',
+      shortLabel: 'scaling extrapolates?',
       provenance: 'model-drafted',
       options: [
         { id: 'extrapolate', label: 'Yes — the curves have held; extrapolation is the default' },
@@ -56,6 +57,7 @@ export const singularityMap: BeliefMap = {
       scope: ['S'],
       prompt:
         'Can AI meaningfully automate AI research itself, so that progress compounds?',
+      shortLabel: 'research compounds?',
       provenance: 'model-drafted',
       note: 'The load-bearing fork: recursive self-improvement is what separates a fast takeoff from every other scenario.',
       options: [
@@ -70,6 +72,7 @@ export const singularityMap: BeliefMap = {
       scope: ['S'],
       prompt:
         'When forecasting an unprecedented event, which do you privilege: the mechanistic inside-view story, or the outside-view record of past technology forecasts?',
+      shortLabel: 'inside vs outside view',
       provenance: 'model-drafted',
       options: [
         { id: 'inside', label: 'Inside view — follow the mechanism where it leads' },
@@ -83,6 +86,7 @@ export const singularityMap: BeliefMap = {
       scope: ['S'],
       prompt:
         'Do you require a forecast to stake near-term checkable predictions before you take it seriously?',
+      shortLabel: 'falsifiability bar',
       provenance: 'model-drafted',
       note: 'Same standard as UAP B10 — the first cross-map fingerprint pair.',
       options: [
@@ -96,6 +100,7 @@ export const singularityMap: BeliefMap = {
       scope: ['S'],
       prompt:
         'Do physical constraints — chips, energy, data — bind hard enough to pace progress regardless of algorithms?',
+      shortLabel: 'constraints bind?',
       provenance: 'model-drafted',
       options: [
         { id: 'bind', label: 'They bind — atoms and joules set the tempo' },
