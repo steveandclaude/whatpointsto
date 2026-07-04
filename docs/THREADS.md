@@ -13,7 +13,7 @@
 > complementary) · `TENSION` (countervailing pair, kept alive on purpose) · `PARKED` (deliberate,
 > revisit condition noted) · `RETIRED` (dead, with cause).
 
-_Last updated: 2026-07-04 (session: interaction design + spike + trust layer)._
+_Last updated: 2026-07-04 (session: session engine v0 shipped — Arc A item 1)._
 
 ---
 
@@ -21,8 +21,10 @@ _Last updated: 2026-07-04 (session: interaction design + spike + trust layer)._
 
 The agreed next arc (Interaction-Design §8):
 
-1. `BUILD` **Session engine** — `src/session.ts`: move types, session reducer, stack/carryback,
-   mode contracts, guide policy v0, tests.
+1. `BUILD` **Session engine** — **shipped 2026-07-04**: `src/session.ts` (12 typed moves incl.
+   the discovered `commit`; pure reducer; exact carryback; Suppose sandbox; mode contracts as
+   data; guide policy v0) + `test/session.test.ts` (55/55 with the map suites). The decisions
+   the reducer forced are recorded in Interaction-Design §7.1.
 2. `BUILD` **Engine v0.2** — `factStances` input; suppositions surfaced in `ReduceResult`.
    Trust layer rides this for free (Interaction §6.3).
 3. `BUILD` **Content fixes** — decompose B5 (double-barreled, Interaction §5.4); authored
@@ -130,6 +132,14 @@ The agreed next arc (Interaction-Design §8):
   carryback; relation sectors; assumption face with held-vs-needed; dispute→position routing —
   Interaction-Design provenance markers.
 - B5 is double-barreled — first violation found by the assumption face — Interaction §5.4.
+- The canonical 11-move grammar had no unseal move — building the session reducer surfaced
+  `commit` as move 12 (first firing of the predicted "writing the reducer forces exactness"
+  effect) — Interaction §7.1.
+- The seal is engine-enforceable, not just renderer discipline: carryback constructs its
+  credence delta only post-commit, so a renderer cannot leak it by accident — src/session.ts.
+- Guide policy v0's structure-only gate weight independently ranks B2 (radar-as-measurement)
+  the top unanswered UAP fork — agreeing with the map author's "load-bearing fork" note on B2 —
+  guideOffers, 2026-07-04.
 - Windows quirk: `node --test` needs the glob form (package.json), not a trailing-slash dir.
 
 ## 7. Retired

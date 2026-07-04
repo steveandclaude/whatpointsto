@@ -217,11 +217,58 @@ belief map already depends on. Prerequisite: structured authorities (§6.1).
 - `recordThought` free text goes through the mediator restatement + confirm gate
   (Platform-Design §2.5.2); a rejected restatement is a §4.2 mismatch finding.
 
+### 7.1 Semantics made exact by the build (2026-07-04, `src/session.ts`)
+
+Writing the session reducer forced these decisions — the effect §8.1 predicted. They are
+pinned by `test/session.test.ts` (20 cases); this list is the record. **[validated — engine + tests]**
+
+- **The move grammar gained `commit` (move 12).** The canonical eleven had no move that ends
+  the sealed walk, yet Mirror's walk ends with an explicit "commit answers & unseal" act (the
+  first renderer already knew this). Commit is Mirror-only and **monotone**: a session unseals
+  once and never re-seals; a new arrival is a new session.
+- **The arrival pair is the door, not a move.** It enters at `createSession` or once on a
+  switch into Mirror (`ARRIVAL_EXISTS` otherwise). Mode is a required constructor argument so
+  §9.4 (Peruse-first vs Mirror-first) stays genuinely open.
+- **`react` ≠ `stance`.** The spike's reaction chips conflated a soft signal with an engine
+  input. `react` (`makes-sense` / `surprising` / `unconvinced` / `hadnt-considered`, a v0
+  working set) is a logged demand signal that exerts nothing; `stance` is the §6.2 reducer
+  input, revocable (`null` clears), routed to record or sandbox by the mode contract.
+- **Suppose is a sandbox workspace**, cloned from the record on entry and dropped on exit with
+  a loud one-shot notice counting the dropped suppositions — "never leaks silently" is
+  structural, not disciplinary. **Entering Suppose during a sealed walk throws** (`SEALED_WALK`):
+  live sandbox bars would un-blind the walk sideways. A no-arrival session may Suppose freely;
+  the mild self-served-landing leak is accepted in v0.
+- **Carryback is exact.** A push snapshots raw inputs only (record answers, stances, thought
+  count); pop diffs the record as-it-was against as-it-is via two belief-reducer re-runs:
+  answers taken/changed/cleared, stances changed, facts gone live, thoughts recorded.
+  Suppositions never appear in a strip (the record is what carries back). `credenceShift`
+  (total-variation) exists on the object **only when the session is unsealed** — the seal is
+  engine-enforced, not renderer discipline. The strip attaches to the resumed frame and clears
+  on the next focus-changing move.
+- **Zoom-out is `focus(null)`**: it clears the stack with a `promises-abandoned` notice naming
+  the broken promises. Notices are one-shot (the next move clears them). Wandering never
+  touches the stack; only push promises.
+- **Mode contracts are data** (`MODE_CONTRACTS`): job, register, `credenceRender`
+  (never / after-commit / live), workspace routing, and the allowed-move table — `answer` in
+  Mirror + Suppose; `stance` additionally in Contribute (structured dispute is a stance);
+  `commit` in Mirror alone; the nine wayfinding moves everywhere. The reducer enforces
+  (`MODE_CONTRACT`).
+- **Guide policy v0 is a pure ranked-offer function** (`guideOffers`): dispute routing (a
+  disputed fact's unanswered `bearsOn` fork outranks everything) → unanswered forks by
+  structural gate weight (rule gates + edge magnitudes + fact triggers: authored structure,
+  seal-safe per §4.1) → live evidence bearing on the focused fork → a pop reminder whose score
+  rises with stack depth (§9.6: no hard cap, observation first) → post-commit only, the payoff
+  frames (direction gap, confidence gap, tensions, contested edges, sensitivity revisits).
+  Scores are backstage; `why` copy is lintable and PROTOCOL-bound. No knowledge-check offers
+  yet — the schema has no entity/primer registry to draw from (§9.3).
+
 ## 8. Build order
 
 1. **Session engine** — `src/session.ts`: move types, session reducer, guide policy v0,
    mode contracts as data; node:test suite. (Writing the reducer will force carryback and
    stance semantics to be exact — the "schema audits content" effect.)
+   **Shipped 2026-07-04** — `src/session.ts` + `test/session.test.ts`, 55/55 with the map
+   suites; the forced decisions are recorded in §7.1.
 2. **Engine v0.2** — `factStances` input; suppositions surfaced in `ReduceResult`. (The trust
    layer compiles to stance defaults, so it rides this with no further engine work; the
    authority taxonomy and freeform-trust mediation land in phase 5.)
