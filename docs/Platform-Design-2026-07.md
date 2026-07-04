@@ -1,0 +1,137 @@
+# Platform Design — Factory Architecture & the Belief-First Front Door
+
+> **Purpose:** Captures the design conversation of July 3, 2026 — the first architecture session held after the seed document. It anchors the project on the platform vision (seed §2 v3), selects the **factory** as the thing being built, and derives the front-door architecture from the observation that **everyone arrives with a belief, varying only in how strongly it is held.**
+>
+> **Position in the doc tree:** `Belief-Map-Seed-Document.md` is the trunk; this document grows the trunk's architecture branches and resolves several of its open questions (§7 below). `UAP-Belief-Map-Handoff.md` remains the authoritative *content* spec for the UAP instance, but its build recommendations (single-file artifact, hard-coded node library) are superseded by the platform frame: **UAP is a data file, not an app** (§2.1).
+>
+> **Status:** Decisions in §2 are made (user-affirmed in conversation). §3–§5 are derived architecture — strong defaults, revisable if a §2 decision changes. §8 is open.
+
+---
+
+## 1. The anchor
+
+The project anchors on the **seed document's platform vision**, not the UAP map. UAP is one instance — the first conformance test of a topic-general system, not the product. Every design question is now evaluated as: *which layer of the platform does this build, and does UAP drop in as content?*
+
+This reframe was the session's first move, and it re-scored everything downstream.
+
+## 2. Decisions
+
+### 2.1 UAP is a data file, not an app
+The handoff's Section 6 node library becomes the first document conforming to a topic-general schema. The engine never knows the word "radar." The handoff's Section 10 open questions (mechanic, visual) mostly dissolve — they are *platform* decisions made once, not per-map.
+
+### 2.2 Factory over intake — the platform is the map-production system
+Two competing theories of what the platform *is* were identified:
+- **Platform = intake:** the regress engine is the universal front door; curated maps are cached, pre-researched regresses. Value accrues at the conversation layer.
+- **Platform = factory:** the generation pipeline (model drafts scaffold → research pass produces strength-tagged fact nodes → contested edges flagged for human review, per seed §7.5) is the core system. Value accrues in the growing library of maps at `/uap`, `/seed-oils`, `/singularity`.
+
+**Decision: factory.** The deciding consideration: the seed's own cost finding — fact nodes are the expensive, quality-critical asset (four research artifacts, two human epistemic corrections for one map). If fact nodes are where quality lives, the factory is where the platform's defensibility lives.
+
+### 2.3 The strip-back is preserved — the belief mapper is factory stage 1, exposed
+Question asked: if we build the factory, can it still be stripped back to a pure belief mapper (user states a belief → map of what must be true)?
+
+**Answer: yes, for free — if four constraints are adopted early.** The regress engine and the factory's scaffold-drafting stage are *the same operation*: a pure belief mapper is the factory in draft-only, single-user, ephemeral mode (the research pass simply not run). The constraints that keep this true (cheap now, expensive to retrofit):
+
+1. **One schema for drafts and published maps, with provenance as first-class node metadata:** every node tiered `model-drafted` / `research-backed` / `human-reviewed`. A user's regress is a map whose fact nodes are all draft-tier or absent. (This also delivers the seed's fact-timestamp/supersession requirement, §4.4, as provenance-over-time.)
+2. **The scaffold-drafter takes a *belief statement* as input, not a topic name** ("seed oils are toxic," not "make a map about seed oils"), deriving the topic. Both entry points then work forever.
+3. **The renderer degrades gracefully when fact nodes are absent** — empty fact layers render as "unresearched: here's what would need checking," which is itself honest self-knowledge.
+4. **The engine stays pure and provenance-blind.** The reducer computes cascades identically on draft and published maps; only presentation of confidence differs.
+
+**Labeling discipline is the price.** The factory's brand is rigor; model-drafted maps must be *unmistakably* draft-grade in the UI — a different visual register, explicit "no research pass has run" framing, not a small badge. Non-steering risk is highest in ungoverned generated content (nothing checked the map for manufactured false symmetry on settled questions).
+
+**Strategic bonus:** the stripped-back mode is the factory's demand signal. Every user regress is market research; chains repeatedly landing in the same territory form the prioritization queue for the expensive research pass. It is also the catch-all route's fallback: `/some-unmapped-topic` serves a labeled draft-grade map instead of a 404 — every path resolves, some resolve to drafts.
+
+### 2.4 Everyone arrives with a belief — belief is the query language
+The intake-vs-factory fork was a false dichotomy: **factory is the supply side; belief is the query language.** Nobody browses to `/uap` out of neutral topical curiosity — even that visitor carries "I think there's something to this" or "it's obviously nonsense." Topic paths are shareable *addresses* of maps; a belief is how anyone actually enters one.
+
+Consequences:
+- **Stated-conclusion-first entry (seed §7.4) is promoted from recommended option to universal front door.** Every map, curated or draft, opens with "what do you currently think?" The payoff headline is the gap between the stated belief and where the user's assumptions lead; no stated belief, no gap, no product moment.
+- **The router is a core v1 component, not a deferred seam.** Front door = a text box; behind it, a matcher: belief statement → existing curated map (and a *position* in it) or, failing that, the draft-grade regress. The homepage is the question; the directory is for return visits and sharing.
+- **Maps are indexed by claims, not just topics.** Hypothesis/conclusion nodes are the router's landing spots ("UAPs are aliens" → H5; "the government holds craft" → explanandum-II A; "Grusch is a grifter" → D). Arrival belief → matched hypothesis node → traversal walks *backward* through the belief nodes gating it. Curated map and regress engine thus share not only a schema but a **direction of traversal**: both run conclusion-backward. A curated map is a pre-computed, pre-researched regress — the seed's v2 framing, arrived at from the other end.
+- **Router misses are triple-valuable** (resolves seed §4.2 operationally): when an arrival belief or its reasoning doesn't match the curated graph, the mismatch is simultaneously (a) a finding shown to the user ("your reasoning doesn't route through any assumption we mapped — here's the fresh chain"), (b) a patch request against the curated map, (c) a factory demand signal. One event, three consumers.
+
+### 2.5 Arrival capture is a pair: the claim, and how strongly it's held
+Beliefs vary not in presence but in strength. "I lean toward thinking seed oils are bad" and "seed oils are poison, full stop" match the same hypothesis node but are different users having different sessions.
+
+- **Capture strength qualitatively, never numerically** — "lean / think / confident / certain," not a percentage slider. The no-false-precision guardrail applies to elicitation, not just display; backstage the engine maps words to weights (the same hybrid trick as everywhere else).
+- **The claim picks the map; the strength picks the mirror** (see §3, §4).
+
+## 3. The two-dimensional gap
+
+With strength captured, the payoff moment has two axes:
+
+- **Direction gap** (already in the design): "you said X; your assumptions lead to Y."
+- **Confidence gap** (new): "your assumptions support this conclusion at roughly lean-level confidence — you're holding it at certainty. The surplus is coming from somewhere this map doesn't show." Fires even on users who are directionally *right* — directional gaps catch the confused; confidence gaps catch everyone. The inverse fires as a gift: "your own assumptions commit you to more than you claim — you believe this harder than you say."
+
+The confidence surplus is often identity doing the work (seed §9.5, Kahan) — the map can show *that* there is a surplus without asserting *what* it is, which stays on the right side of the author-not-defendant guardrail.
+
+## 4. Strength as the lens dispatcher
+
+The first place the seed's framework lenses (§9) earn a v1 job. Strength-of-holding is the user's *felt report of web-centrality* (a certainty-grade belief is core-of-web by definition), and it predicts the failure mode — Kahan-style gaming concentrates in strongly-held, identity-adjacent arrivals. So strength routes the experience:
+
+| Arrival strength | Treatment |
+|---|---|
+| Lean / think | Standard foundationalist cascade (cheap, direct) — user updates easily |
+| Confident / certain | Coherentist register (seed §9.3): revision-*cost* framing, not error framing — "here's what giving this up would cost you to rewire." Revision-display (seed §5.4) matters most here. |
+| "Nothing could change my mind" | The labeled non-evidential landing spot (design commitment 6), offered up front rather than discovered at the end |
+
+v1 needs a lens *dispatcher*, not a lens *switcher* — the user hands over the dispatch key in their second answer.
+
+## 5. Ordering: the pre-registration seal
+
+Belief-first arrival and pre-registration (seed §5.1) must be ordered carefully: the stated conclusion would contaminate assumption elicitation (users back-solving belief-node answers toward their landing spot). Fix: capture the arrival pair, then **visibly seal it** — "we'll come back to this" — and run assumption elicitation with no running credence bars until commitments lock. The seal is theater, but honest theater: it tells the user their stated view is safe from judgment while their assumptions speak.
+
+## 6. Divergent directions considered (and how the platform frame re-scored them)
+
+Six build directions were mapped across three axes — interface (map vs. conversation-with-map-as-receipt), content source (curated / generated / user-authored), unit of use (solo / dyad / decision-maker):
+
+| Direction | One-line | Fate under the platform frame |
+|---|---|---|
+| A — Museum Piece | Bespoke curated UAP app per the handoff | **Inverted from safest to riskiest**: hand-builds exactly what the factory should generate. Content stays valuable; the build wouldn't. |
+| B — Regress engine first | Belief-first generation, no curated content | Merged with the pipeline into the intake-vs-factory fork; resolved in §2.2–2.4 |
+| C — Conversation, not app | Chat-first Street Epistemology; map as receipt | Survives as a **cheap fatal-risk experiment**: an afternoon of prompting the regress conversation on real beliefs tests whether the tone guardrail (author-vs-defendant) survives contact. Worth doing regardless of build direction. Not v1 itself — freeform conversation weakens pre-registration. |
+| D — Dyadic wedge | Crux-finder for two people first | Demoted to mode (seed §7.2); design test = expressible on the platform without touching the engine |
+| E — Trust-network product | Map sources, not beliefs (seed §9.2) | Demoted to lens; different ontology on shared graph infrastructure |
+| F — Decision mode first | Personal decisions (seed §8.3) | Demoted to mode; commercially safest, missionally furthest drift |
+
+**Genuine one-way doors identified:** only two — map-first vs. conversation-first (interaction paradigm), and beliefs vs. sources as node ontology. Everything else is sequencing. The shared cascade engine (schema + pure reducer + sensitivity computation) is ~15% of any build and common to all directions.
+
+## 7. Seed/handoff open questions this session resolved or moved
+
+| Question | Status after this session |
+|---|---|
+| Seed §12.1 — belief-first as separate mode or universal intake? | **Resolved:** universal intake (router), backed by the factory (§2.4) |
+| Seed §12.2 — which framework lens ships first? | **Advanced:** coherentist lens gets a v1 job via the strength dispatcher (§4); verbal-dispute and pragmatist probe still queued per seed recommendation |
+| Handoff §10.5 — entry point | **Resolved:** stated-conclusion-first, universally, with the seal (§2.4, §5) |
+| Handoff §10.1/10.2 — mechanic, visual | **Reframed:** platform-level decisions, made once. Hybrid mechanic effectively affirmed (qualitative strength words → backstage weights, §2.5). Visual still open. |
+| Seed §12.4 — schema shared across topic types? | **Constrained:** schema must fit explanation/forecast/policy from day one; retrofitting is the expensive path. Rule of two applies (§8.1). |
+| Seed §12.6 — minimum viable sociological-bill generator | Open; now scoped as part of factory stage 1 |
+
+Also affirmed early in the session: **epistemic standards promoted to a first-class node type from the first schema draft** (seed §4.1) — they are the cross-topic asset enabling the fingerprint (§7.1), and B4/B10-style nodes will appear in every map ever shipped.
+
+## 8. Open questions (new or sharpened)
+
+1. **Topic #2 for the rule of two.** Recommendation on record: the **singularity** (forecasting type — maximally unlike UAP's explanation type) as a deliberately *unresearched* thin scaffold, purely to prove the schema generalizes. Seed oils would be another explanation-type map and proves nothing new.
+2. **Router implementation.** Belief statement → (map, position) matching is a model task; what's the failure/quality bar before a miss falls back to draft regress? How is a *partial* match (right map, unmapped reasoning) rendered?
+3. **Draft-grade visual register.** What does "unmistakably draft" look like concretely, such that it doesn't read as merely ugly?
+4. **Strength vocabulary.** Is lean/think/confident/certain the right ladder? Does it need a "certain and nothing could change my mind" rung explicitly, or is that elicited by the terminal question later?
+5. **Confidence-gap computation.** The direction gap falls out of the reducer; the confidence gap needs the engine to emit a *supported-confidence* level per hypothesis. What is that, formally, in the hybrid mechanic?
+6. **The tone experiment (Direction C).** Still unrun. Cheapest fatal-risk retirement available; should precede or accompany any engine build.
+7. **Longitudinal metric.** Strength is the trackable scalar across snapshots (direction rarely flips; strength drifts). What's the minimum persistence design that supports a six-month re-elicitation diff without prematurely forcing the accounts/privacy question (seed §12.3)?
+
+## 9. Reasoning trail (this session's moves, preserved per seed §11 convention)
+
+1. **Re-scoring under a new anchor** — declaring the seed (platform) the anchor inverted Direction A from safest to riskiest and dissolved most per-map open questions into platform-level ones. The evaluation criterion shifted from "how do we build the UAP map well" to "which layer of the platform does this build."
+2. **Naming the axes before the options** — interface / content source / unit of use proved more durable than any single direction and exposed that most directions differ by sequencing, not architecture.
+3. **Recognizing two operations as one** — the factory's scaffold-drafter and the regress engine are the same function with different callers; this is what makes the strip-back free and turned "should we preserve it?" into four cheap schema constraints.
+4. **Dissolving the fork with a supply/demand split** — "everyone arrives with a belief" resolved intake-vs-factory into *factory as supply, belief as query language*, which promoted the router and stated-conclusion-first entry to core v1.
+5. **Following the scalar** — "just a matter of how strongly held" made arrival a (claim, strength) pair, which generated the confidence gap (a payoff that fires on directionally-correct users) and the lens dispatcher (strength routes foundationalist vs. coherentist treatment). The lenses stopped being v3 luxury the moment a v1 component needed them.
+6. **Checking every mechanism against pre-registration** — belief-first entry threatened elicitation contamination; the seal (capture, visibly set aside, elicit blind, then reveal) preserves §5.1 inside the new front door.
+7. **The naming observation as evidence** — the project's two names encode the two arrival stories (`situationalawareness.to` = factory/shelf; `whatpointsto` = intake/question). The resolution keeps both: the factory makes the destinations; the question is how everyone finds them.
+
+## 10. One-paragraph summary for re-entry
+
+The platform is a **map factory** — a generation pipeline whose expensive, quality-critical asset is researched, strength-tagged fact nodes — fronted by a **belief-first door**: every user arrives with a claim and a strength ("what do you think, and how hard?"), a router matches the claim to a curated map position or falls back to a clearly-labeled draft-grade regress (which is just the factory's first stage running without the research pass), the stated belief is sealed while assumptions are elicited blind, and the payoff is two-dimensional — the direction gap (where your assumptions actually lead) and the confidence gap (how much certainty they actually support). Strength dispatches the lens: lightly-held beliefs get the foundationalist cascade, strongly-held ones get coherentist revision-cost framing, and "nothing could change my mind" gets its honest, labeled landing spot. UAP is the first data file; the singularity scaffold is the schema's second conformance test; the mirror stays merciless and its tone stays neutral.
+
+---
+
+*Companions: `Belief-Map-Seed-Document.md` (trunk), `UAP-Belief-Map-Handoff.md` (UAP instance content spec), `docs/research/` (the four fact-library artifacts).*
