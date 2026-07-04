@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>whatpointsto — focus-graph spike</title>
+<link rel="icon" href="data:," />
+<style>
+  :root {
+    --bg: #0d1220;
+    --panel: #141b2e;
+    --panel-line: #26304a;
+    --ink: #dfe6f5;
+    --ink-soft: #8d99b8;
+    --outcome: #f0b64b;
+    --position: #6ba3ff;
+    --standard: #b18cff;
+    --fact: #3fd0b6;
+    --accent: #ffd27f;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; height: 100vh; display: flex; flex-direction: column;
+    background: var(--bg); color: var(--ink);
+    font-family: "Segoe UI", system-ui, sans-serif; overflow: hidden;
+  }
+  header {
+    padding: 8px 16px; font-size: 0.85rem; color: var(--ink-soft);
+    border-bottom: 1px solid var(--panel-line); display: flex; gap: 14px; align-items: baseline;
+  }
+  header b { color: var(--ink); }
+  header .stamp {
+    border: 1px solid var(--accent); color: var(--accent); border-radius: 4px;
+    padding: 0 8px; font-weight: 700; letter-spacing: 0.12em; font-size: 0.7rem;
+  }
+  main { flex: 1; display: flex; min-height: 0; }
+  #scene { flex: 1; min-width: 0; }
+  svg { width: 100%; height: 100%; display: block; cursor: default; }
+
+  /* nodes */
+  .node { cursor: pointer; }
+  .node .shape { stroke: rgba(255,255,255,0.25); stroke-width: 1.5; }
+  .node.outcome .shape { fill: var(--outcome); }
+  .node.position .shape { fill: var(--position); }
+  .node.position.standard .shape { fill: var(--standard); }
+  .node.fact .shape { fill: var(--fact); }
+  .node .idlabel { fill: #0d1220; font-weight: 700; font-size: 13px; pointer-events: none; }
+  .node .name { fill: #c9d4ea; font-size: 12px; pointer-events: none; }
+  .node.answered .shape { stroke: #7dffb0; stroke-width: 3; }
+  .node.live .shape { filter: drop-shadow(0 0 7px rgba(63, 208, 182, 0.9)); }
+  .node.focus-ring .shape { stroke: #ffffff; stroke-width: 3; }
+
+  /* edges */
+  .edge { fill: none; stroke-linecap: round; }
+  .edge.influence { stroke: #7f92c0; }
+  .edge.contested { stroke: #c9a2ff; stroke-dasharray: 7 5; }
+  .edge.evidence { stroke: #3fd0b6; stroke-dasharray: 2 5; }
+  .tether { fill: none; stroke: var(--accent); stroke-dasharray: 4 6; stroke-width: 1.6; opacity: 0.55; }
+
+  /* panel */
+  #panel {
+    width: 430px; border-left: 1px solid var(--panel-line); background: var(--panel);
+    padding: 14px 16px; overflow-y: auto; font-size: 0.92rem; line-height: 1.45;
+  }
+  #panel h2 { font-size: 1.02rem; margin: 4px 0 8px; }
+  #panel h3 { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 16px 0 6px; }
+  .muted { color: var(--ink-soft); font-size: 0.84rem; }
+  .chip {
+    display: inline-block; margin: 3px 4px 3px 0; padding: 5px 10px; border-radius: 8px;
+    border: 1px solid var(--panel-line); background: #1b2440; color: var(--ink);
+    cursor: pointer; font-size: 0.84rem;
+  }
+  .chip:hover { border-color: var(--accent); }
+  .chip.kind-outcome { border-left: 3px solid var(--outcome); }
+  .chip.kind-position { border-left: 3px solid var(--position); }
+  .chip.kind-standard { border-left: 3px solid var(--standard); }
+  .chip.kind-fact { border-left: 3px solid var(--fact); }
+  .chip.selected { background: var(--position); color: #0d1220; font-weight: 600; }
+  .badge {
+    display: inline-block; font-size: 0.66rem; letter-spacing: 0.05em; text-transform: uppercase;
+    border: 1px solid var(--panel-line); border-radius: 4px; padding: 1px 6px; color: var(--ink-soft);
+    margin-right: 6px;
+  }
+  .crumbs { margin-bottom: 10px; }
+  .crumb {
+    display: block; margin-bottom: 5px; padding: 6px 10px; border-radius: 8px;
+    background: #221d10; border: 1px dashed var(--accent); color: var(--accent);
+    cursor: pointer; font-size: 0.82rem;
+  }
+  .carryback {
+    background: #12281e; border: 1px solid #2f8a5c; color: #9fe8c0; border-radius: 8px;
+    padding: 8px 10px; margin: 10px 0; font-size: 0.85rem;
+  }
+  .toolbar { display: flex; gap: 8px; margin-bottom: 10px; }
+  .toolbar button {
+    font: inherit; font-size: 0.82rem; cursor: pointer; border-radius: 8px;
+    border: 1px solid var(--panel-line); background: #1b2440; color: var(--ink); padding: 6px 10px;
+  }
+  .toolbar button:hover { border-color: var(--accent); }
+  #log { margin-top: 18px; border-top: 1px solid var(--panel-line); padding-top: 8px; }
+  #log div { color: var(--ink-soft); font-size: 0.76rem; padding: 1px 0; }
+  .legend { display: flex; gap: 12px; flex-wrap: wrap; margin: 10px 0; font-size: 0.8rem; color: var(--ink-soft); }
+  .dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 4px; vertical-align: baseline; }
+</style>
+</head>
+<body>
+  <header>
+    <b>whatpoints<span style="color:#6ba3ff">to</span></b>
+    <span class="stamp">SPIKE</span>
+    <span>focus-graph feel test — throwaway. Click a node to focus; click the background to zoom out.</span>
+  </header>
+  <main>
+    <div id="scene"></div>
+    <div id="panel"></div>
+  </main>
+  <script type="module" src="/dist/web/spike.js"></script>
+</body>
+</html>
