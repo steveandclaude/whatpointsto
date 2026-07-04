@@ -49,7 +49,47 @@ Consequences:
 - **Maps are indexed by claims, not just topics.** Hypothesis/conclusion nodes are the router's landing spots ("UAPs are aliens" → H5; "the government holds craft" → explanandum-II A; "Grusch is a grifter" → D). Arrival belief → matched hypothesis node → traversal walks *backward* through the belief nodes gating it. Curated map and regress engine thus share not only a schema but a **direction of traversal**: both run conclusion-backward. A curated map is a pre-computed, pre-researched regress — the seed's v2 framing, arrived at from the other end.
 - **Router misses are triple-valuable** (resolves seed §4.2 operationally): when an arrival belief or its reasoning doesn't match the curated graph, the mismatch is simultaneously (a) a finding shown to the user ("your reasoning doesn't route through any assumption we mapped — here's the fresh chain"), (b) a patch request against the curated map, (c) a factory demand signal. One event, three consumers.
 
-### 2.5 Arrival capture is a pair: the claim, and how strongly it's held
+### 2.5 Interface: menu-like surface, LLM as mediator/creator — never an open channel *(added 2026-07-04)*
+The primary interface is **not conversational**. The surface is structured — a visual map, menus,
+click targets, detail panels — and the LLM lives entirely backstage in two roles: **creator**
+(drafting scaffolds, authoring node copy, generating fork menus — the factory) and **mediator**
+(translating free-text arrival beliefs into map positions, generating draft regresses for unmapped
+territory, expanding detail on demand). The user never meets the model in an open channel.
+
+Grounding: the tone experiment (`experiments/tone/RESULTS.md`) showed every confirmed voice breach
+was a failure of *improvised speech under social pressure* — appeasement of a provoked user,
+fabrication inside a live steelman, reassurance-by-negation. None of these failure modes exists on
+a structured surface, because none can: there is no improvisation and no dyad. Tone is a property
+of a social relationship; a map is a mirror-shaped entity, not a judge-shaped one, so commitment 2
+("the mirror is merciless; the mirror's tone is neutral") is enforced architecturally.
+
+Three consequences:
+1. **Typed artifacts.** Every LLM output is a schema-validated, typed artifact (node, fork option,
+   tension flag, detail panel) — lintable against the voice rules (PROTOCOL v1.2 frame ban) as a
+   build/QA stage rather than a runtime constraint. Voice review joins fact-node review in the
+   factory's human-review layer.
+2. **User-confirmed mediation.** When the mediator restates a user's free text (arrival routing,
+   "something else in your own words," §4.2 reasoning-onto-graph mapping), the UI shows the
+   artifact for acceptance before it enters map state. Fidelity breaches can still be generated
+   but cannot persist — and a rejected mapping *is* the §4.2 mismatch finding.
+3. **Generative tone risk concentrates at two seams** — mediator restatements (guarded by the
+   confirm gate) and draft-regress copy (guarded by lint + the unmistakably-draft visual
+   register, §2.3) — which is exactly where the tone protocol applies. The experiment tested the
+   mediator under worst-case conditions (open channel, social provocation) and the v1.2 protocol
+   survived; the seams are guarded by validated rules.
+
+Named principle — **backstage rule, applied twice**: the handoff's hybrid mechanic was "real
+weights backstage, qualitative surface up front"; this decision is "real generation backstage,
+structured surface up front." Same design move: rigor where it can be rigorous, legibility where
+the user lives. Expect a third application eventually.
+
+Accepted costs: the terminal question loses conversational force (copy problem; needs care — T4's
+"nobody's actually asked me that before" moment came from being *asked*); and the defensive user's
+failure mode shifts from recoverable eruption to silent abandonment (a UX metric to watch, not a
+tone bug — a map cannot de-escalate). Direction C is dead as a product direction; it survives as
+prompt-testing methodology.
+
+### 2.6 Arrival capture is a pair: the claim, and how strongly it's held
 Beliefs vary not in presence but in strength. "I lean toward thinking seed oils are bad" and "seed oils are poison, full stop" match the same hypothesis node but are different users having different sessions.
 
 - **Capture strength qualitatively, never numerically** — "lean / think / confident / certain," not a percentage slider. The no-false-precision guardrail applies to elicitation, not just display; backstage the engine maps words to weights (the same hybrid trick as everywhere else).
@@ -88,7 +128,7 @@ Six build directions were mapped across three axes — interface (map vs. conver
 |---|---|---|
 | A — Museum Piece | Bespoke curated UAP app per the handoff | **Inverted from safest to riskiest**: hand-builds exactly what the factory should generate. Content stays valuable; the build wouldn't. |
 | B — Regress engine first | Belief-first generation, no curated content | Merged with the pipeline into the intake-vs-factory fork; resolved in §2.2–2.4 |
-| C — Conversation, not app | Chat-first Street Epistemology; map as receipt | Survives as a **cheap fatal-risk experiment**: an afternoon of prompting the regress conversation on real beliefs tests whether the tone guardrail (author-vs-defendant) survives contact. Worth doing regardless of build direction. Not v1 itself — freeform conversation weakens pre-registration. |
+| C — Conversation, not app | Chat-first Street Epistemology; map as receipt | **Run 2026-07-04** (`experiments/tone/`): guardrail survived (4/4 "fairly treated" verdicts); breaches found were over-accommodation, fixed in PROTOCOL v1.2. Dead as a product direction per §2.5 (open channel = highest-risk surface); survives as prompt-testing methodology. |
 | D — Dyadic wedge | Crux-finder for two people first | Demoted to mode (seed §7.2); design test = expressible on the platform without touching the engine |
 | E — Trust-network product | Map sources, not beliefs (seed §9.2) | Demoted to lens; different ontology on shared graph infrastructure |
 | F — Decision mode first | Personal decisions (seed §8.3) | Demoted to mode; commercially safest, missionally furthest drift |
@@ -102,7 +142,7 @@ Six build directions were mapped across three axes — interface (map vs. conver
 | Seed §12.1 — belief-first as separate mode or universal intake? | **Resolved:** universal intake (router), backed by the factory (§2.4) |
 | Seed §12.2 — which framework lens ships first? | **Advanced:** coherentist lens gets a v1 job via the strength dispatcher (§4); verbal-dispute and pragmatist probe still queued per seed recommendation |
 | Handoff §10.5 — entry point | **Resolved:** stated-conclusion-first, universally, with the seal (§2.4, §5) |
-| Handoff §10.1/10.2 — mechanic, visual | **Reframed:** platform-level decisions, made once. Hybrid mechanic effectively affirmed (qualitative strength words → backstage weights, §2.5). Visual still open. |
+| Handoff §10.1/10.2 — mechanic, visual | **Reframed:** platform-level decisions, made once. Hybrid mechanic effectively affirmed (qualitative strength words → backstage weights, §2.6). Visual narrowed by §2.5: a structured map/menu surface, LLM backstage; layout metaphor still open. |
 | Seed §12.4 — schema shared across topic types? | **Constrained:** schema must fit explanation/forecast/policy from day one; retrofitting is the expensive path. Rule of two applies (§8.1). |
 | Seed §12.6 — minimum viable sociological-bill generator | Open; now scoped as part of factory stage 1 |
 
@@ -115,7 +155,7 @@ Also affirmed early in the session: **epistemic standards promoted to a first-cl
 3. **Draft-grade visual register.** What does "unmistakably draft" look like concretely, such that it doesn't read as merely ugly?
 4. **Strength vocabulary.** Is lean/think/confident/certain the right ladder? Does it need a "certain and nothing could change my mind" rung explicitly, or is that elicited by the terminal question later?
 5. **Confidence-gap computation.** The direction gap falls out of the reducer; the confidence gap needs the engine to emit a *supported-confidence* level per hypothesis. What is that, formally, in the hybrid mechanic?
-6. **The tone experiment (Direction C).** Still unrun. Cheapest fatal-risk retirement available; should precede or accompany any engine build.
+6. **The tone experiment (Direction C).** ~~Still unrun.~~ Run 2026-07-04 — see `experiments/tone/RESULTS.md`. Verdict: GO. The gotcha failure mode did not appear; the observed failure cluster was over-accommodation (false balance under provocation, steelman fabrication, frame-denial), fixed as PROTOCOL v1.2 rules 9–14. Note the audience calibration: the appeasement findings matter *more* for the actual audience (self-selected rationality-aspirants, seed commitment 3) than the de-escalation findings — a curious self-examiner is failed by flattery, not by bluntness.
 7. **Longitudinal metric.** Strength is the trackable scalar across snapshots (direction rarely flips; strength drifts). What's the minimum persistence design that supports a six-month re-elicitation diff without prematurely forcing the accounts/privacy question (seed §12.3)?
 
 ## 9. Reasoning trail (this session's moves, preserved per seed §11 convention)
