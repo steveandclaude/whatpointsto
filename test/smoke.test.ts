@@ -55,7 +55,7 @@ function miniMap(): BeliefMap {
         text: 'Most investigated reports resolve to mundane causes.',
         strength: 'STRONG',
         provenance: 'research-backed',
-        sources: ['artifact-1'],
+        sources: [{ authority: 'artifact-1' }],
         bearsOn: ['P1'],
       },
       {
@@ -63,7 +63,7 @@ function miniMap(): BeliefMap {
         text: 'The key testimony is genuinely two-sided.',
         strength: 'STRONG',
         provenance: 'research-backed',
-        sources: ['artifact-2'],
+        sources: [{ authority: 'artifact-2' }],
         baseline: true,
       },
     ],

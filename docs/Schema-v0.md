@@ -31,9 +31,11 @@ BeliefMap
 ├─ slug, title, topicType, version
 ├─ questions[]   generalized explananda (UAP: two). Outcomes compete within a
 │                question, never across (softmax per question).
-├─ positions[]   user-supplied: prompt + options; options may trigger facts
-├─ facts[]       world-supplied: strength, sources, assertedAt, supersededBy,
-│                provenance tier, optional bearsOn, optional baseline
+├─ positions[]   user-supplied: prompt + options (+ authored shortLabel — node
+│                IDs never reach the user); options may trigger facts
+├─ facts[]       world-supplied: strength, structured sources {authority,
+│                citation?, retrievedAt?}, origin, assertedAt, supersededBy,
+│                provenance tier, optional bearsOn, baseline, shortLabel
 ├─ outcomes[]    landing spots: kind per topicType, assumptionCost, basePrior?,
 │                claims[] (router index)
 ├─ edges[]       first-class influence: source (fact | position+option) →
@@ -52,6 +54,12 @@ BeliefMap
 fact family is empty or all draft-tier — same schema, same engine (the §2.3 strip-back
 expressed as data). Research-tier facts must cite sources (I9). The reducer is
 provenance-blind; only presentation differs.
+
+### Origin is not review tier (facts, v0.2)
+`origin: llm-knowledge | web-researched | author-researched | user-contributed` — where the
+CONTENT came from, orthogonal to who vouches for it (Interaction-Design §6.1). Each source is
+structured: the **authority** is what a user weighs — and what the trust layer keys stances
+on — while the citation says where to look. I9 errors on a source without an authority.
 
 ### Edges are first-class, not embedded weight tables
 Two things must live on them: **contested state** — genuinely two-sided evidence (F3, F10)
@@ -78,7 +86,7 @@ side-by-side, so the data holds both.
 | I6 | error | Rules and tensions reference existing positions/options/outcomes |
 | I7 | warn | Outcomes should declare `claims[]` — else unreachable by the router |
 | I8 | warn | Outcome kind should match topicType |
-| I9 | error | Research-tier facts must cite sources |
+| I9 | error | Research-tier facts must cite sources; every source names an authority |
 
 ## 4. The reducer contract
 

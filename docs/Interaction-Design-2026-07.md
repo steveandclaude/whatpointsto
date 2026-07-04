@@ -94,7 +94,7 @@ seal requires*. Same schema, same reducer, same scene geometry throughout.
 ### 5.1 No shorthand on the user surface **[user feedback #1]**
 - Node IDs (B5, F3, H1) never reach the user. Full phrases everywhere; scene labels are short
   *names*, panels carry full text. Schema wants an authored `shortLabel` per node (spike
-  hardcoded one).
+  hardcoded one). *(Added in schema v0.2; UAP authored from the validated spike labels.)*
 - `whyCopy` is promoted from tooltip to the primary relation surface: every "this connects to
   that" renders the edge's plain-language story inline. The schema already carried this
   artifact; the renderer was underusing it. **[validated as tooltip; inline is the target]**
@@ -128,7 +128,8 @@ knowledge demand signal. Session state carries known-entities so nothing is aske
   alone as an assertible proposition (it *is* the assumption face). First confirmed violation:
   UAP B5 conflates credential-weight with secondhand-discount — queued for decomposition into
   two positions (edges split; optionally a rule if the interaction itself is the insight).
-  **[user feedback #3]**
+  **[user feedback #3]** *(Done 2026-07-04: B5a/B5b, joint weights preserved as sums — no
+  interaction rule needed yet; UAP-Port-Notes §6.)*
 - PROTOCOL v1.2 frame ban applies to guide narration verbatim: describe what the map is doing,
   never what it is not.
 
@@ -141,7 +142,9 @@ the content came from), orthogonal to review:
 - `origin: llm-knowledge | web-researched | author-researched | user-contributed`
 - `sources` upgrade from opaque strings to structured authorities:
   `{ authority: string; citation?: string; retrievedAt?: string }` — "distilled to an
-  authority" is what a user weighs and what the linter checks.
+  authority" is what a user weighs and what the linter checks. *(Shipped in schema v0.2 with
+  `origin`; UAP distilled to research-artifact authorities as an interim step — the
+  real-world authority taxonomy is the §6.3 pass. UAP-Port-Notes §6.)*
 - **User-contributed facts are a new node class**: the regress engine's raw material ("here's
   why I believe this"), entering at draft tier, wearing origin openly. A user-fact recurring
   across sessions is the factory's strongest research-demand signal.
@@ -284,6 +287,9 @@ pinned by `test/session.test.ts` (20 cases); this list is the record. **[validat
    §6.2; 65/65 with all suites.
 3. **Content fixes** — decompose B5; authored `shortLabel`s; begin origin/authority fields
    (schema v0.2) with UAP sources restructured.
+   **Shipped 2026-07-04** — B5 → B5a/B5b (joint weights preserved; UAP-Port-Notes §6);
+   `shortLabel` on positions/facts; `FactSource {authority, citation?, retrievedAt?}` +
+   `origin` in the schema; 67/67 with two new conformance guards.
 4. **Scene renderer on the session engine** — replace both the first renderer's elicitation
    wall and the spike; Mirror mode first (arrival → seal → focus walk → relight payoff), then
    Peruse; Suppose after engine v0.2.

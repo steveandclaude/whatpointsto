@@ -65,3 +65,32 @@ factory pipeline as an authoring rule.
   not yet authored.
 - The payoff screen's "untouched assumption" nudge is a renderer concern (unanswered positions
   are visible as absent keys in `answers`); no schema change needed.
+
+## 6. v0.2 content pass (2026-07-04): B5 decomposed, sources structured
+
+- **B5 was double-barreled** — the first confirmed violation of the single-proposition
+  authoring rule (Interaction-Design §5.4), found by the assumption face in the spike. It
+  conflated credential-weight with the secondhand discount. Decomposed into **B5a — credential
+  weight** ("credentials vouch for content" vs "for sincerity only") and **B5b — secondhand
+  discount** ("keeps most force" vs "loses most of it"), both `world-belief`, scope II. The
+  inventory is deliberately 11 positions now; the conformance suite asserts the divergence.
+- **The edge split preserves the joint weights**: strong+minor ⇒ A+0.4 (old B5.strong);
+  weak+steep ⇒ B+0.3, D+0.2 (old B5.weak). The redistribution is semantic: credential
+  skepticism routes to the rumor loop (sincere people repeating each other); the secondhand
+  discount routes the escalation to incentives (D) plus repetition (B). Each fork alone now
+  carries roughly half the old force — the joint stays reachable, the halves are honest.
+- **The Grusch facts moved to the secondhand half**: F2/F3 `bearsOn: ['B5b']` and trigger from
+  B5b's options — both facts are about firsthandness, not credentials. B5a has no bearing
+  facts, which is honest: nothing in the fact layer speaks to credential-vouching per se.
+- **T1's testimony partner is now B5b:steep** — the wholesale discount is the reading T1's
+  copy describes.
+- **Sources are structured** (`{authority, citation?, retrievedAt?}`, schema v0.2). Interim
+  distillation: the authority named is the project research artifact that vouches for the
+  fact ('Radar in the Dock', 'The Case Against AARO', …); the citation keeps the section
+  pointer where one existed. Distilling to real-world authority classes (AARO, GAO, named
+  journalists) is the trust-layer taxonomy pass — deliberately not done mechanically here.
+- **Origin declared**: all 13 facts carry `origin: 'author-researched'` (content produced by
+  this project's research artifacts) — orthogonal to their `research-backed` review tier.
+- **Open question surfaced by the split**: is the secondhand discount a portable epistemic
+  standard? Kept `world-belief` because F2/F3 must bear on it (I1) — the call rhymes with
+  §1's B4 note. Revisit if the cross-map fingerprint wants it. Registered in THREADS §3.

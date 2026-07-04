@@ -10,12 +10,35 @@ import { test } from 'node:test';
 import { uapMap } from '../content/uap.js';
 import { confidenceGap, reduce, sensitivity, validateMap } from '../src/index.js';
 
-test('inventory matches the handoff: 10 positions, 13 facts, 12 outcomes, 5 rules', () => {
-  assert.equal(uapMap.positions.length, 10);
+test('inventory: handoff plus the deliberate B5 decomposition — 11 positions, 13 facts, 12 outcomes, 5 rules', () => {
+  // The handoff shipped 10 positions; v0.2 decomposed double-barreled B5 into
+  // B5a + B5b (Interaction-Design §5.4, recorded in UAP-Port-Notes).
+  assert.equal(uapMap.positions.length, 11);
   assert.equal(uapMap.facts.length, 13);
   assert.equal(uapMap.outcomes.length, 12);
   assert.equal(uapMap.rules.length, 5);
   assert.equal(uapMap.questions.length, 2);
+});
+
+test('B5 decomposition preserves the joint weights; the facts speak to the secondhand half', () => {
+  const believer = reduce(uapMap, { B5a: 'strong', B5b: 'minor' });
+  const lift = (r: typeof believer, ids: string[], outcome: string) =>
+    r.movements.filter((m) => ids.includes(m.source.id) && m.outcome === outcome).reduce((s, m) => s + m.delta, 0);
+  assert.ok(Math.abs(lift(believer, ['e:B5a.strong', 'e:B5b.minor'], 'A') - 0.4) < 1e-9, 'strong+minor ⇒ A+0.4, the old B5.strong weight');
+  const skeptic = reduce(uapMap, { B5a: 'weak', B5b: 'steep' });
+  assert.ok(Math.abs(lift(skeptic, ['e:B5a.weak', 'e:B5b.steep'], 'B') - 0.3) < 1e-9, 'weak+steep ⇒ B+0.3');
+  assert.ok(Math.abs(lift(skeptic, ['e:B5a.weak', 'e:B5b.steep'], 'D') - 0.2) < 1e-9, 'weak+steep ⇒ D+0.2');
+  assert.deepEqual(uapMap.facts.find((f) => f.id === 'F2')!.bearsOn, ['B5b']);
+  assert.deepEqual(uapMap.facts.find((f) => f.id === 'F3')!.bearsOn, ['B5b']);
+});
+
+test('v0.2 authoring: shortLabels everywhere; sources distilled to authorities; origin declared', () => {
+  for (const p of uapMap.positions) assert.ok(p.shortLabel, `${p.id} carries a shortLabel`);
+  for (const f of uapMap.facts) {
+    assert.ok(f.shortLabel, `${f.id} carries a shortLabel`);
+    assert.ok(f.sources.length > 0 && f.sources.every((s) => s.authority.length > 0));
+    assert.equal(f.origin, 'author-researched');
+  }
 });
 
 test('map validates with zero errors', () => {
@@ -24,7 +47,7 @@ test('map validates with zero errors', () => {
 });
 
 test('the two explananda stay separate: each normalizes to 1 independently', () => {
-  const r = reduce(uapMap, { B1: 'high', B5: 'strong' });
+  const r = reduce(uapMap, { B1: 'high', B5a: 'strong' });
   for (const q of ['I', 'II']) {
     const sum = Object.values(r.credences[q]!).reduce((a, b) => a + b, 0);
     assert.ok(Math.abs(sum - 1) < 1e-9, `question ${q} should normalize`);
@@ -65,7 +88,7 @@ test('R2, the believer reckoning: radar-as-measurement brightens exotic, then F9
 });
 
 test('contested evidence is surfaced, never resolved: F3 and F10', () => {
-  const r = reduce(uapMap, { B2: 'measurement', B5: 'strong' });
+  const r = reduce(uapMap, { B2: 'measurement', B5b: 'minor' });
   const ids = r.contested.map((c) => c.edgeId).sort();
   assert.deepEqual(ids, ['e:F10', 'e:F3']);
   // And they exert no influence: strip them and scores are identical.
@@ -73,7 +96,7 @@ test('contested evidence is surfaced, never resolved: F3 and F10', () => {
     ...uapMap,
     edges: uapMap.edges.filter((e) => e.id !== 'e:F3' && e.id !== 'e:F10'),
   };
-  assert.deepEqual(reduce(stripped, { B2: 'measurement', B5: 'strong' }).scores, r.scores);
+  assert.deepEqual(reduce(stripped, { B2: 'measurement', B5b: 'minor' }).scores, r.scores);
 });
 
 test('R4, the gating priors: high physics cost + low here-now prior cap ETH', () => {
@@ -84,25 +107,25 @@ test('R4, the gating priors: high physics cost + low here-now prior cap ETH', ()
 });
 
 test('T1 tension: distrusting both AARO and the testimony is surfaced', () => {
-  const r = reduce(uapMap, { B5: 'weak', B6: 'compromised' });
+  const r = reduce(uapMap, { B5b: 'steep', B6: 'compromised' });
   assert.ok(r.tensions.some((t) => t.id === 'T1'));
-  assert.equal(reduce(uapMap, { B5: 'weak' }).tensions.length, 0);
+  assert.equal(reduce(uapMap, { B5b: 'steep' }).tensions.length, 0);
 });
 
 test('sensitivity on a full traversal produces a ranked, non-trivial readout', () => {
   const answers = {
-    B1: 'high', B2: 'measurement', B3: 'yes', B4: 'holds', B5: 'strong',
+    B1: 'high', B2: 'measurement', B3: 'yes', B4: 'holds', B5a: 'strong', B5b: 'minor',
     B6: 'compromised', B7: 'low-cost', B8: 'high', B9: 'heavy', B10: 'loose',
   };
   const s = sensitivity(uapMap, answers);
-  assert.equal(s.length, 10, 'every answered position is ranked');
+  assert.equal(s.length, 11, 'every answered position is ranked');
   assert.ok(s[0]!.shift > 0);
   assert.ok(s[0]!.shift >= s[s.length - 1]!.shift);
 });
 
 test('confidence gap: certainty in recovered craft against a skeptical chain shows surplus', () => {
   // Arrival claim "the government has recovered non-human craft" → outcome A.
-  const r = reduce(uapMap, { B4: 'leaky', B5: 'weak', B6: 'credible' });
+  const r = reduce(uapMap, { B4: 'leaky', B5b: 'steep', B6: 'credible' });
   const gap = confidenceGap(r, 'A', 'certain');
   assert.ok(gap.gapSteps > 0, 'stated certain, chain supports less');
 });

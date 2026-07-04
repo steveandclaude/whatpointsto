@@ -123,7 +123,9 @@ function factCard(f: FactNode): string {
     ? `<div class="small muted">speaks to ${f.bearsOn.map(esc).join(', ')}</div>`
     : '';
   const sources = f.sources.length
-    ? `<div class="sources">${f.sources.map((s) => `<code>${esc(s)}</code>`).join('')}</div>`
+    ? `<div class="sources">${f.sources
+        .map((s) => `<code${s.citation ? ` title="${esc(s.citation)}"` : ''}>${esc(s.authority)}</code>`)
+        .join('')}</div>`
     : '';
   return `<div class="card factcard ${f.strength}">
     <span class="badge strength">${f.strength.toLowerCase()}</span> ${provBadge(f.provenance)}

@@ -609,7 +609,7 @@ function panelForFact(f: FactNode): string {
   return `
     <span class="badge">evidence · ${f.strength.toLowerCase()} · ${esc(f.provenance)}</span>
     <h2 style="font-size:0.95rem; font-weight:500;">${esc(f.text)}</h2>
-    <div class="muted">${f.sources.map(esc).join(' · ')}</div>
+    <div class="muted">${f.sources.map((s) => esc(s.authority)).join(' · ')}</div>
     <h3>Your reaction</h3>
     ${rbtn('accept', 'makes sense')} ${rbtn('dispute', 'I dispute this')} ${rbtn('more', 'tell me more')}
     ${reaction === 'more' ? `<div class="carryback">In the real build the LLM drafts an expansion here — a typed, linted artifact.</div>` : ''}

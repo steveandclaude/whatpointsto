@@ -13,7 +13,8 @@
 > complementary) · `TENSION` (countervailing pair, kept alive on purpose) · `PARKED` (deliberate,
 > revisit condition noted) · `RETIRED` (dead, with cause).
 
-_Last updated: 2026-07-04 (session: Arc A items 1–2 shipped — session engine v0 + engine v0.2)._
+_Last updated: 2026-07-04 (session: Arc A items 1–3 shipped — session engine v0, engine v0.2,
+content/schema v0.2)._
 
 ---
 
@@ -29,8 +30,11 @@ The agreed next arc (Interaction-Design §8):
    `ReduceResult.suppositions` + `.parked`; stances threaded through counterfactual/sensitivity
    and the session engine's carryback + guide policy. Exactness notes in Interaction §6.2.
    Trust layer rides this for free (Interaction §6.3).
-3. `BUILD` **Content fixes** — decompose B5 (double-barreled, Interaction §5.4); authored
-   `shortLabel`s; structured authorities on UAP sources (schema v0.2).
+3. `BUILD` **Content fixes** — **shipped 2026-07-04**: B5 → B5a/B5b with joint weights
+   preserved as sums (UAP-Port-Notes §6); authored `shortLabel`s on all UAP positions/facts;
+   `FactSource {authority, citation?, retrievedAt?}` + `origin` in schema v0.2 (interim:
+   authorities = the project research artifacts; the real-world taxonomy is the trust-layer
+   pass). Conformance suite deliberately updated — 11 positions, 67/67.
 4. `BUILD` **Scene renderer on the session engine** — Mirror mode first; replaces both the
    first renderer's wall and the spike.
 5. `BUILD` **Voice linter, then LLM seams** — linter rule set now includes single-proposition
@@ -85,6 +89,9 @@ The agreed next arc (Interaction-Design §8):
 - `OPEN` **Longitudinal metric & persistence** — strength/trust-word drift across snapshots;
   move log is the persistence unit; blocked behind privacy gate (seed §12.3) — Platform §8.7;
   Interaction §9.5
+- `OPEN` **B5b kind question** — is the secondhand discount a portable epistemic standard?
+  Kept world-belief for now because F2/F3 must bear on it (I1); revisit if the cross-map
+  fingerprint wants it — UAP-Port-Notes §6
 - `OPEN` **Mode entry** — Peruse-first or Mirror-first for a fresh visitor — Interaction §9.4
 - `OPEN` **Stack depth cap** — observation needed, not theory — Interaction §9.6
 
@@ -133,7 +140,8 @@ The agreed next arc (Interaction-Design §8):
 - Spike validations (2026-07-04): focus+context feel at ~40 nodes; pinned-promise stack +
   carryback; relation sectors; assumption face with held-vs-needed; dispute→position routing —
   Interaction-Design provenance markers.
-- B5 is double-barreled — first violation found by the assumption face — Interaction §5.4.
+- B5 is double-barreled — first violation found by the assumption face — Interaction §5.4;
+  decomposed 2026-07-04 into B5a/B5b, joint weights preserved — UAP-Port-Notes §6.
 - The canonical 11-move grammar had no unseal move — building the session reducer surfaced
   `commit` as move 12 (first firing of the predicted "writing the reducer forces exactness"
   effect) — Interaction §7.1.

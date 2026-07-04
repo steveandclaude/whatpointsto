@@ -2,8 +2,18 @@
  * UAP map — conformance port of UAP-Belief-Map-Handoff.md §6 into Schema v0.
  *
  * Fidelity notes:
- * - Node inventory is the handoff's: 10 positions (B1–B10), 13 facts (F1–F13),
+ * - Node inventory was the handoff's: 10 positions (B1–B10), 13 facts (F1–F13),
  *   12 outcomes (H1–H7 for question I, A–E for question II), rules R1–R5.
+ * - v0.2 deliberate divergence: B5 (double-barreled — the first confirmed
+ *   violation of the single-proposition rule, Interaction-Design §5.4) is
+ *   decomposed into B5a (credential weight) + B5b (secondhand discount), so
+ *   the inventory is now 11 positions. The old joint weights survive as sums:
+ *   strong+minor ⇒ A+0.4, weak+steep ⇒ B+0.3 D+0.2. Recorded in
+ *   docs/UAP-Port-Notes.md.
+ * - Sources are structured {authority, citation?} (schema v0.2). The authority
+ *   currently named is the project research artifact that vouches for the
+ *   fact; distilling to real-world authority classes (AARO, GAO, named
+ *   journalists…) is a later, deliberate pass — the trust layer keys on it.
  * - All delta MAGNITUDES are provisional tuning (the handoff: "tune magnitudes
  *   in code"); DIRECTIONS are the handoff's.
  * - Judgment calls and schema-forced clarifications: docs/UAP-Port-Notes.md.
@@ -17,7 +27,7 @@ export const uapMap: BeliefMap = {
   slug: 'uap',
   title: 'What explains UAPs?',
   topicType: 'explanation',
-  version: '0.1.0',
+  version: '0.2.0',
 
   questions: [
     { id: 'I', title: 'What explains the sightings and sensor reports?' },
@@ -39,6 +49,7 @@ export const uapMap: BeliefMap = {
       scope: ['I'],
       prompt:
         'How much do you trust uninstrumented eyewitness estimates of speed, distance, and acceleration?',
+      shortLabel: 'eyewitness kinematics',
       provenance: 'human-reviewed',
       note: 'Pilots are genuinely poor at this without reference points — that observation is what the fork is about.',
       options: [
@@ -52,6 +63,7 @@ export const uapMap: BeliefMap = {
       scope: ['I'],
       prompt:
         'Do you treat radar tracks as measurements, or as possibly artifacts (anomalous propagation, second-time-around returns)?',
+      shortLabel: 'radar: measurement?',
       provenance: 'human-reviewed',
       note: 'The load-bearing fork for pre-1960 anomaly.',
       options: [
@@ -65,6 +77,7 @@ export const uapMap: BeliefMap = {
       standardId: 'unexplained-as-anomalous',
       scope: ['I', 'II'],
       prompt: 'Do you treat "unexplained" as "anomalous"?',
+      shortLabel: 'unexplained = anomalous?',
       provenance: 'human-reviewed',
       options: [
         { id: 'yes', label: 'Yes — a persistent residue points at something real', triggersFacts: ['F6', 'F7', 'F8'] },
@@ -78,6 +91,7 @@ export const uapMap: BeliefMap = {
       scope: ['I', 'II'],
       prompt:
         'How leakproof can a multi-decade, multi-thousand-person secret be — especially one with physical evidence?',
+      shortLabel: 'secrecy leakproofness',
       provenance: 'human-reviewed',
       options: [
         { id: 'leaky', label: 'Secrets that big leak — decades of silence is implausible' },
@@ -85,15 +99,30 @@ export const uapMap: BeliefMap = {
       ],
     },
     {
-      id: 'B5',
+      id: 'B5a',
       kind: 'world-belief',
       scope: ['II'],
       prompt:
-        'Is credentialed-insider testimony strong evidence even when secondhand? How do you weight sincerity against accuracy?',
+        'Does credentialed status — rank, clearances, testimony under oath — make an insider’s claims weighty by themselves?',
+      shortLabel: 'credential weight',
       provenance: 'human-reviewed',
+      note: 'Decomposed from double-barreled B5 alongside B5b (Interaction-Design §5.4) — the first single-proposition rewrite.',
       options: [
-        { id: 'strong', label: 'Strong — credentialed insiders under oath carry real weight', triggersFacts: ['F2', 'F3'] },
-        { id: 'weak', label: 'Weak — sincerity is attested, content is not verified', triggersFacts: ['F2', 'F3'] },
+        { id: 'strong', label: 'Credentials carry real weight — rank and oath vouch for the content' },
+        { id: 'weak', label: 'Credentials vouch for sincerity, not content' },
+      ],
+    },
+    {
+      id: 'B5b',
+      kind: 'world-belief',
+      scope: ['II'],
+      prompt: 'How much evidential force does testimony lose when it is secondhand?',
+      shortLabel: 'secondhand discount',
+      provenance: 'human-reviewed',
+      note: 'Decomposed from B5 alongside B5a. The Grusch facts (F2, F3) speak to this half.',
+      options: [
+        { id: 'minor', label: 'Little — secondhand from vetted insiders keeps most of its force', triggersFacts: ['F2', 'F3'] },
+        { id: 'steep', label: 'Most of it — content someone else attested is not yet evidence', triggersFacts: ['F2', 'F3'] },
       ],
     },
     {
@@ -103,6 +132,7 @@ export const uapMap: BeliefMap = {
       scope: ['I', 'II'],
       prompt:
         'How do you read a conflicted, self-investigating body (AARO sits inside the chain of command it investigates)?',
+      shortLabel: 'conflicted investigator',
       provenance: 'human-reviewed',
       note: 'The key node. See rule R3 — this is where the calibrated update diverges from the naive one.',
       options: [
@@ -116,6 +146,7 @@ export const uapMap: BeliefMap = {
       scope: ['I'],
       prompt:
         'How costly is the assumption that new physics (FTL, inertia control) is required?',
+      shortLabel: 'new-physics cost',
       provenance: 'human-reviewed',
       options: [
         { id: 'high-cost', label: 'Very costly — new physics is an enormous ask', triggersFacts: ['F11'] },
@@ -127,6 +158,7 @@ export const uapMap: BeliefMap = {
       kind: 'world-belief',
       scope: ['I'],
       prompt: 'What is your prior that ET civilizations are within reach and here now?',
+      shortLabel: 'ET here-now prior',
       provenance: 'human-reviewed',
       options: [
         { id: 'low', label: 'Low — the conjunction of requirements is steep', triggersFacts: ['F11'] },
@@ -139,6 +171,7 @@ export const uapMap: BeliefMap = {
       scope: ['I', 'II'],
       prompt:
         'How much does the historical government debunking precedent (Robertson Panel, Condon) shape your read of today’s efforts?',
+      shortLabel: 'debunking precedent',
       provenance: 'human-reviewed',
       options: [
         { id: 'heavy', label: 'Heavily — the pattern repeats', triggersFacts: ['F13'] },
@@ -151,6 +184,7 @@ export const uapMap: BeliefMap = {
       standardId: 'falsifiability-requirement',
       scope: ['I', 'II'],
       prompt: 'Do you require a hypothesis to make checkable predictions to take it seriously?',
+      shortLabel: 'falsifiability bar',
       provenance: 'human-reviewed',
       options: [
         { id: 'strict', label: 'Yes — unfalsifiable claims don’t get credence from me', triggersFacts: ['F12'] },
@@ -160,108 +194,140 @@ export const uapMap: BeliefMap = {
   ],
 
   // -------------------------------------------------------------------------
-  // Facts (strengths and directions per handoff §6C; sources are artifact keys
-  // in docs/research/ plus the handoff itself)
+  // Facts (strengths and directions per handoff §6C; the authority named on
+  // each source is the project research artifact that vouches for it)
   // -------------------------------------------------------------------------
   facts: [
     {
       id: 'F1',
       baseline: true,
+      shortLabel: 'most cases resolve',
       strength: 'STRONG',
       provenance: 'research-backed',
-      sources: ['UAP-Belief-Map-Handoff §6C', 'The Case Against AARO'],
+      origin: 'author-researched',
+      sources: [
+        { authority: 'UAP-Belief-Map-Handoff', citation: '§6C' },
+        { authority: 'The Case Against AARO' },
+      ],
       text: 'Most investigated cases resolve to mundane objects (AARO and the historical record). Exotic hypotheses only ever need to explain a residue.',
     },
     {
       id: 'F2',
+      shortLabel: 'Grusch: secondhand',
       strength: 'STRONG',
       provenance: 'research-backed',
-      sources: ["David Grusch's UAP Claims"],
-      bearsOn: ['B5'],
+      origin: 'author-researched',
+      sources: [{ authority: "David Grusch's UAP Claims" }],
+      bearsOn: ['B5b'],
       text: 'Grusch is firsthand to his investigation and to others’ testimony — not to craft or bodies; his framing escalated 2023→2026 with no new public evidence.',
     },
     {
       id: 'F3',
+      shortLabel: 'firsthand? contested',
       strength: 'STRONG',
       provenance: 'research-backed',
-      sources: ["David Grusch's UAP Claims"],
-      bearsOn: ['B5'],
+      origin: 'author-researched',
+      sources: [{ authority: "David Grusch's UAP Claims" }],
+      bearsOn: ['B5b'],
       text: 'AARO says Grusch’s sources lacked firsthand program access (circular reporting); Mellon disputes this and says he introduced firsthand witnesses. Genuinely two-sided.',
     },
     {
       id: 'F4',
+      shortLabel: 'AARO conflicted',
       strength: 'STRONG',
       provenance: 'research-backed',
-      sources: ['The Case Against AARO'],
+      origin: 'author-researched',
+      sources: [{ authority: 'The Case Against AARO' }],
       text: 'AARO is structurally conflicted; its 2024 Historical Record Report is methodologically weak; Congress mandated a GAO audit of it.',
     },
     {
       id: 'F5',
+      shortLabel: 'the pivot',
       strength: 'STRONG',
       provenance: 'research-backed',
-      sources: ['The Case Against AARO', 'UAP-Belief-Map-Handoff §6C'],
+      origin: 'author-researched',
+      sources: [
+        { authority: 'The Case Against AARO' },
+        { authority: 'UAP-Belief-Map-Handoff', citation: '§6C' },
+      ],
       text: 'THE PIVOT: a conflicted debunker raises the plausibility of terrestrial secrecy, not of aliens — mundane black programs explain the same conflicted-investigation pattern at far lower assumption cost.',
       note: 'Evidence card for rule R3; the credence movement lives in the rule.',
     },
     {
       id: 'F6',
+      shortLabel: 'residue exists',
       strength: 'STRONG',
       provenance: 'research-backed',
-      sources: ['Pre-1960 UFO Cases and the 5 Observables'],
+      origin: 'author-researched',
+      sources: [{ authority: 'Pre-1960 UFO Cases and the 5 Observables' }],
       text: 'Credible unexplained pre-1960 cases exist (Battelle SR-14: 21.5% unknowns, better cases more often unknown; Condon: ~30% of 117 unexplained). A residue is real; that alone does not imply anomaly.',
     },
     {
       id: 'F7',
+      shortLabel: 'the correction',
       strength: 'STRONG',
       provenance: 'research-backed',
-      sources: ['Pre-1960 UFO Cases and the 5 Observables'],
+      origin: 'author-researched',
+      sources: [{ authority: 'Pre-1960 UFO Cases and the 5 Observables' }],
       text: 'THE CORRECTION: "antigravity" is a proposed mechanism, not an observable — only behavior is ever visible. Cloaking and trans-medium travel are undetectable-by-construction pre-1960. That era is SILENT — not negative, not positive — on observables #1/#4/#5, and can speak only to #2 (acceleration) and #3 (speed-without-signature).',
       note: 'Cuts both ways by design: blocks "no cloaking, therefore weak" and "the old cases showed all five" alike.',
     },
     {
       id: 'F8',
+      shortLabel: 'bridge to radar',
       strength: 'STRONG',
       provenance: 'research-backed',
-      sources: ['Pre-1960 UFO Cases and the 5 Observables'],
+      origin: 'author-researched',
+      sources: [{ authority: 'Pre-1960 UFO Cases and the 5 Observables' }],
       text: 'The pre-1960 observables question therefore collapses to #2/#3 — which depend entirely on whether the radar tracks were genuine measurements or artifacts.',
       note: 'The bridge from B3 to B2.',
     },
     {
       id: 'F9',
+      shortLabel: 'no logged tracks',
       strength: 'STRONG',
       provenance: 'research-backed',
-      sources: ['Radar in the Dock'],
+      origin: 'author-researched',
+      sources: [{ authority: 'Radar in the Dock' }],
       bearsOn: ['B2'],
       text: 'THE RADAR HINGE: in both best cases (Lakenheath, RB-47) every speed/acceleration figure is an eyeball estimate or a ~10-year-later memory reconstruction. No instrument-logged track, radar film, or scope photo survives.',
     },
     {
       id: 'F10',
+      shortLabel: 'radar residue contested',
       strength: 'STRONG',
       provenance: 'research-backed',
-      sources: ['Radar in the Dock'],
+      origin: 'author-researched',
+      sources: [{ authority: 'Radar in the Dock' }],
       bearsOn: ['B2'],
       text: 'Lakenheath retains a residue if the multi-sensor concurrency is real — but that rests on a 1968 memory letter. RB-47’s diagnostic S-band signal matches a common ground radar (CPS-6B), and a "UTAH had negative contact" teletype line contradicts the simultaneity claim.',
     },
     {
       id: 'F11',
+      shortLabel: 'ETH conjunction cost',
       strength: 'STRONG',
       provenance: 'research-backed',
-      sources: ['UAP-Belief-Map-Handoff §6C'],
+      origin: 'author-researched',
+      sources: [{ authority: 'UAP-Belief-Map-Handoff', citation: '§6C' }],
       text: 'The ET hypothesis requires a conjunction: a civilization within reach, interstellar travel (new physics or extreme patience), present now, behaving ambiguously for decades, leaving no public proof. The assumption cost is the product of all of these.',
     },
     {
       id: 'F12',
+      shortLabel: 'near-unfalsifiable',
       strength: 'MODERATE',
       provenance: 'research-backed',
-      sources: ['UAP-Belief-Map-Handoff §6C'],
+      origin: 'author-researched',
+      sources: [{ authority: 'UAP-Belief-Map-Handoff', citation: '§6C' }],
       text: 'The interdimensional hypothesis, as usually stated, is near-unfalsifiable.',
       note: 'Evidence card for rule R5; the credence movement lives in the rule.',
     },
     {
       id: 'F13',
+      shortLabel: 'debunking precedent',
       strength: 'MODERATE',
       provenance: 'research-backed',
-      sources: ['The Case Against AARO'],
+      origin: 'author-researched',
+      sources: [{ authority: 'The Case Against AARO' }],
       text: 'The Robertson Panel recommended a public debunking campaign; Condon is widely read as predetermined. Pattern-matching AARO to these is analogy, not evidence of intent.',
     },
   ],
@@ -303,9 +369,11 @@ export const uapMap: BeliefMap = {
     // B4 — secrecy prior (scope spans both questions)
     { id: 'e:B4.leaky', from: { position: 'B4', option: 'leaky' }, effects: { A: -0.6, E: -0.2, H3: -0.1 }, whyCopy: 'If big secrets leak, decades of leakproof artifact custody is exactly what your prior says doesn’t happen.' },
     { id: 'e:B4.holds', from: { position: 'B4', option: 'holds' }, effects: { A: 0.3, H3: 0.2, C: 0.2 }, whyCopy: 'If compartmentalization works, long-held secrets stop being an extraordinary assumption.' },
-    // B5 — insider testimony
-    { id: 'e:B5.strong', from: { position: 'B5', option: 'strong' }, effects: { A: 0.4 }, whyCopy: 'Weighting credentialed testimony heavily lets the whistleblower accounts move the recovery question.' },
-    { id: 'e:B5.weak', from: { position: 'B5', option: 'weak' }, effects: { B: 0.3, D: 0.2 }, whyCopy: 'Separating sincerity from accuracy routes the same testimony toward rumor-loop and incentive readings.' },
+    // B5a / B5b — the decomposed testimony forks (joint weights preserved as sums)
+    { id: 'e:B5a.strong', from: { position: 'B5a', option: 'strong' }, effects: { A: 0.2 }, whyCopy: 'Letting rank and oath vouch for content gives the whistleblower accounts direct weight on the recovery question.' },
+    { id: 'e:B5a.weak', from: { position: 'B5a', option: 'weak' }, effects: { B: 0.2 }, whyCopy: 'Sincerity without verified content is what a rumor loop is made of — sincere people repeating each other.' },
+    { id: 'e:B5b.minor', from: { position: 'B5b', option: 'minor' }, effects: { A: 0.2 }, whyCopy: 'Keeping most of secondhand testimony’s force lets the relayed recovery accounts count nearly as evidence.' },
+    { id: 'e:B5b.steep', from: { position: 'B5b', option: 'steep' }, effects: { B: 0.1, D: 0.2 }, whyCopy: 'Discounting secondhand content leaves the escalation carried by repetition and incentives, not new evidence.' },
     // B6 — conflicted investigator
     { id: 'e:B6.credible', from: { position: 'B6', option: 'credible' }, effects: { B: 0.4 }, whyCopy: 'Taking AARO as broadly credible lends its circular-reporting account real weight.' },
     { id: 'e:B6.compromised', from: { position: 'B6', option: 'compromised' }, effects: { B: -0.3 }, whyCopy: 'A structurally conflicted investigator can’t settle the question on authority — its account loses standing.' },
@@ -407,7 +475,7 @@ export const uapMap: BeliefMap = {
       id: 'T1',
       between: [
         { position: 'B6', option: 'compromised' },
-        { position: 'B5', option: 'weak' },
+        { position: 'B5b', option: 'steep' },
       ],
       copy:
         'You distrust AARO and you distrust the insider testimony — these two settings pull your recovery-question view in opposite directions. Which one carries more weight for you?',

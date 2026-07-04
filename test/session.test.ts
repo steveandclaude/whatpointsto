@@ -3,7 +3,7 @@
  * carryback, the Suppose sandbox, seal discipline, and guide policy v0.
  *
  * The walk fixtures use the UAP map: B6 (the AARO fork, triggers F4/F5),
- * B5 (insider testimony, triggers F2/F3, borne on by both), B4 (secrecy
+ * B5b (secondhand discount, triggers F2/F3, borne on by both), B4 (secrecy
  * prior, no triggers) — chosen so answer/trigger/stance diffs are all
  * exercised by short move sequences.
  */
@@ -365,11 +365,11 @@ test('a session is its move log: replay reproduces the state byte-exact', () => 
     { type: 'answer', position: 'B6', option: 'compromised' },
     { type: 'stance', fact: 'F4', stance: 'accept' },
     { type: 'pop' },
-    { type: 'answer', position: 'B5', option: 'weak' },
+    { type: 'answer', position: 'B5b', option: 'steep' },
     { type: 'commit' },
     { type: 'focus', target: t('gap', 'direction') },
     { type: 'mode-switch', mode: 'suppose' },
-    { type: 'answer', position: 'B5', option: 'strong' },
+    { type: 'answer', position: 'B5b', option: 'minor' },
     { type: 'mode-switch', mode: 'mirror' },
   ];
   const a = replaySession(uapMap, createSession(uapMap, 'mirror', ARRIVAL), log);
@@ -416,7 +416,7 @@ test('policy: a dispute routes to the fork it is (bearsOn), as the top offer', (
   );
   const top = guideOffers(uapMap, s)[0]!;
   assert.equal(top.move.type, 'push');
-  assert.ok(top.move.type === 'push' && top.move.target.id === 'B5');
+  assert.ok(top.move.type === 'push' && top.move.target.id === 'B5b');
   assert.ok(top.move.type === 'push' && top.move.reason === 'dispute-route');
 });
 
@@ -424,8 +424,8 @@ test('policy: live evidence bearing on the focused fork is offered until present
   let s = createSession(uapMap, 'mirror');
   s = run(
     s,
-    { type: 'answer', position: 'B5', option: 'weak' }, // triggers F2, F3 live
-    { type: 'focus', target: t('position', 'B5') },
+    { type: 'answer', position: 'B5b', option: 'steep' }, // triggers F2, F3 live
+    { type: 'focus', target: t('position', 'B5b') },
   );
   const factOffers = (state: SessionState) =>
     guideOffers(uapMap, state)
@@ -441,7 +441,7 @@ test('policy: post-commit the payoff frames open — gaps first, tensions and co
   s = run(
     s,
     { type: 'answer', position: 'B6', option: 'compromised' },
-    { type: 'answer', position: 'B5', option: 'weak' }, // T1 fires; F3 contested goes live
+    { type: 'answer', position: 'B5b', option: 'steep' }, // T1 fires; F3 contested goes live
     { type: 'commit' },
   );
   const offers = guideOffers(uapMap, s);

@@ -51,7 +51,7 @@ function stanceMap(): BeliefMap {
         text: 'Most reports resolve to mundane causes.',
         strength: 'STRONG',
         provenance: 'research-backed',
-        sources: ['a1'],
+        sources: [{ authority: 'a1' }],
         bearsOn: ['P1'],
       },
       {
@@ -59,7 +59,7 @@ function stanceMap(): BeliefMap {
         text: 'A residue of credible cases exists.',
         strength: 'MODERATE',
         provenance: 'research-backed',
-        sources: ['a2'],
+        sources: [{ authority: 'a2' }],
         baseline: true,
       },
       {
@@ -67,7 +67,7 @@ function stanceMap(): BeliefMap {
         text: 'The key testimony is genuinely two-sided.',
         strength: 'STRONG',
         provenance: 'research-backed',
-        sources: ['a3'],
+        sources: [{ authority: 'a3' }],
         baseline: true,
       },
     ],
@@ -224,7 +224,7 @@ test('the reducer stays provenance-blind under stances', () => {
   for (const p of promoted.positions) p.provenance = 'human-reviewed';
   for (const f of promoted.facts) f.provenance = 'human-reviewed';
   for (const o of promoted.outcomes) o.provenance = 'human-reviewed';
-  const answers = { B2: 'measurement', B5: 'weak' };
+  const answers = { B2: 'measurement', B5b: 'steep' };
   const stances = { F9: 'dispute', F2: 'suppose' } as const;
   assert.deepEqual(reduce(promoted, answers, stances).scores, reduce(uapMap, answers, stances).scores);
 });

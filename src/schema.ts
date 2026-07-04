@@ -18,6 +18,13 @@ export type TopicType = 'explanation' | 'forecast' | 'policy';
 /** Who vouches for a node's content. A draft-mode map is all 'model-drafted'. */
 export type Provenance = 'model-drafted' | 'research-backed' | 'human-reviewed';
 
+/**
+ * Where a fact's CONTENT came from — orthogonal to provenance, which is a
+ * review tier (Interaction-Design §6.1: origin is not review tier). A
+ * user-contributed fact enters at draft tier wearing its origin openly.
+ */
+export type FactOrigin = 'llm-knowledge' | 'web-researched' | 'author-researched' | 'user-contributed';
+
 export type FactStrength = 'STRONG' | 'MODERATE' | 'WEAK';
 
 /**
@@ -74,6 +81,11 @@ export interface PositionOption {
 interface PositionBase {
   id: PositionId;
   prompt: string;
+  /**
+   * Authored short scene label — node IDs never reach the user (Interaction
+   * Design §5.1). Renderers fall back to truncating the prompt when absent.
+   */
+  shortLabel?: string;
   /** Which questions this position feeds. */
   scope: QuestionId[];
   options: PositionOption[];
@@ -107,13 +119,29 @@ export type PositionKind = PositionNode['kind'];
 // draft-mode regress; the renderer must degrade gracefully.
 // ---------------------------------------------------------------------------
 
+/**
+ * A structured source: the AUTHORITY is what a user weighs — and what the
+ * trust layer keys stances on (Interaction-Design §6.1/§6.3); the citation
+ * says where to look. "Distilled to an authority" is what the linter checks.
+ */
+export interface FactSource {
+  authority: string;
+  citation?: string;
+  /** ISO date the source was consulted. */
+  retrievedAt?: string;
+}
+
 export interface FactNode {
   id: FactId;
   text: string;
+  /** Authored short scene label (Interaction Design §5.1). */
+  shortLabel?: string;
   strength: FactStrength;
   provenance: Provenance;
-  /** Citation keys (research artifacts, URLs). May be empty only at model-drafted tier. */
-  sources: string[];
+  /** Where the content came from — orthogonal to the review tier above. */
+  origin?: FactOrigin;
+  /** Structured sources. May be empty only at model-drafted tier. */
+  sources: FactSource[];
   /** ISO date the fact was last verified/asserted. Facts have timestamps. */
   assertedAt?: string;
   /** Supersession pointer — the domain is dynamic; facts version. */
@@ -402,10 +430,13 @@ export function validateMap(map: BeliefMap): SchemaViolation[] {
     }
   }
 
-  // I9 — research-tier facts must cite sources.
+  // I9 — research-tier facts must cite sources, distilled to an authority.
   for (const f of map.facts) {
     if (f.provenance !== 'model-drafted' && f.sources.length === 0) {
       err('I9', `fact ${f.id} is ${f.provenance} but cites no sources`);
+    }
+    for (const s of f.sources) {
+      if (!s.authority) err('I9', `fact ${f.id} has a source with no authority — the authority is what a user weighs`);
     }
   }
 
