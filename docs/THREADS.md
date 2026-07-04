@@ -13,10 +13,10 @@
 > complementary) · `TENSION` (countervailing pair, kept alive on purpose) · `PARKED` (deliberate,
 > revisit condition noted) · `RETIRED` (dead, with cause).
 
-_Last updated: 2026-07-04 (session: scene renderer shipped on the session engine — Mirror
-end-to-end + Peruse toggle; first renderer and spike retired; answer-shape probe idea
-captured, unweighed; BYO-inference thread explored, platform mechanisms verified, and
-graduated to docs/BYO-Inference-2026-07.md)._
+_Last updated: 2026-07-04 (session: voice linter shipped — src/lint.ts, errors fail
+`npm test` / warnings print for review, design record in Interaction §5.6; first real
+findings are two double-barrel warnings on the singularity draft's labels; §1 item 5 is now
+half done — LLM seams are next)._
 
 ---
 
@@ -44,9 +44,14 @@ The agreed next arc (Interaction-Design §8):
    only dedups the frame already on screen). Suppose UI not yet built (engine support shipped).
    `web/app.ts` and the spike are deleted; the map-generic deterministic layout replaced the
    spike's UAP hardcodes. Browser-validated on UAP (full walk) and the singularity draft.
-5. `BUILD` **Voice linter, then LLM seams** — linter rule set now includes single-proposition
-   authoring rules and the seal-word surface ban (Interaction §5.5); seams per Platform §2.5
-   gates.
+5. `BUILD` **Voice linter, then LLM seams** — **linter shipped 2026-07-04**: `src/lint.ts`,
+   pure `lintMap` + `lintNarration`; errors (seal vocabulary, non-assertible option labels)
+   fail `npm test`, heuristic warnings (frame negation, prosecutorial vocabulary,
+   double-barrel signals) print for human review; `test/lint.test.ts` covers rule mechanics,
+   field wiring, both maps, and every guide-policy `why` string (76/76 with all suites).
+   Severity model + scope rulings recorded in Interaction §5.6; it is the admission gate
+   every BYO tier needs (BYO doc §7). **Next: the LLM seams** per Platform §2.5 gates
+   (Interaction §8.5).
 
 ## 2. Decided & locked
 
@@ -125,6 +130,10 @@ The agreed next arc (Interaction-Design §8):
   visited (no "seen" signal in the ranking); the renderer dedups only the frame currently on
   screen. Does visited-ness belong in the policy (a session-derived input, seal-safe) or is
   re-offering correct? Found building the scene renderer, 2026-07-04
+- `OPEN` **Linter coverage of renderer-embedded copy** — the scene renderer speaks promise/
+  reveal copy as code literals (`web/scene.ts`, `web/index.html`) the artifact linter can't
+  see; eyeball discipline for now; revisit if a string-extraction or copy-table pass earns
+  its keep. Found building the voice linter, 2026-07-04 — Interaction §5.6
 - `OPEN` **Mode entry** — Peruse-first or Mirror-first for a fresh visitor — Interaction §9.4.
   The scene renderer provisionally enters Mirror (belief-first door); the question stays open
 - `OPEN` **Stack depth cap** — observation needed, not theory — Interaction §9.6
@@ -190,6 +199,12 @@ The agreed next arc (Interaction-Design §8):
 - Guide policy v0 never offers rule frames, so the R3 ghost-vs-solid moment was unreachable
   until the reveal hub grew a "what moved beneath you" section (renderer-side navigation, not a
   policy change) — web/scene.ts frameOverview, 2026-07-04.
+- The voice linter's first pass: UAP's human-reviewed copy and all nine guide-policy `why`
+  strings lint clean; the only findings are two double-barrel warnings on singularity P1's
+  model-drafted option labels (semicolon-joined propositions) — the draft tier flagged
+  exactly as designed. A naive `\band\b` scan would have false-positived on legitimate noun
+  lists ("speed, distance, and acceleration"), so the heuristic keys on clause-joining
+  signals instead — test/lint.test.ts, 2026-07-04.
 
 ## 7. Retired
 

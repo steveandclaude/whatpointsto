@@ -150,6 +150,42 @@ Voice-linter rule: seal-words and 🔒/🔓 are banned from copy fields and guid
 (A mechanical token ban in the linter is fine — the "lexical bans fail" finding is about
 steering model narration, not about checking authored artifacts.)
 
+### 5.6 The voice linter **[shipped 2026-07-04 — src/lint.ts]**
+
+Pure `lintMap(map) → LintFinding[]` plus `lintNarration(text, where)` for guide-voice
+strings; runs once per finished artifact — in `npm test` over content/ (`test/lint.test.ts`)
+and, later, at artifact admission (**admission = validateMap + lintMap**; I9 stays in the
+schema validator — the linter re-checks no schema invariant). It never intercepts live LLM
+output: lexical bans fail against a steered model but hold on finished artifacts (RESULTS §6).
+It is the admission gate every BYO tier needs (BYO-Inference doc §7).
+
+Severity model (the early decision §8.5 called for): **errors fail `npm test`; warnings print
+as diagnostics and never fail.** Findings are data — an admission gate applies its own policy
+over the same list. Two tiers:
+
+- **Errors (mechanical):** seal-words + padlock glyphs anywhere on the user surface (§5.5);
+  non-assertible option labels — empty, question-shaped, or bare yes/no (§5.4).
+- **Warnings (heuristic, for human review):** frame-ban negation patterns and rule-11
+  prosecutorial vocabulary (PROTOCOL v1.2); double-barrel signals on prompts and option
+  labels only — clause-joining conjunctions ("…and on what timescale"), stacked question
+  marks, semicolons. Noun lists ("speed, distance, and acceleration") stay legal.
+
+Scope rulings made in the build: author-facing `note` fields are never linted; fact text
+speaks in world-reporting voice, so it is exempt from the prosecutorial scan ("officials
+admitted…" describes an actor, not the user); router claims are the user's own phrasings
+(seal scan only); **"gap" is excluded from the prosecutorial list** — the direction and
+confidence gaps are core descriptive product vocabulary (§4.2 makes `gap` a focus kind), and
+PROTOCOL bans the word only as a charge in the conversational guide's voice. Question titles
+sit outside the double-barrel scan (§5.4 governs elicitation prompts; the singularity title
+fuses arrival-and-timescale deliberately).
+
+First real findings: singularity P1's two option labels warn (semicolon-joined propositions)
+— model-drafted, never-reviewed content flagged exactly as intended; UAP's human-reviewed
+copy lints clean, as does every `why` string guide policy v0 can emit (walked end-to-end in
+the test). Open edge: renderer-embedded copy (`web/scene.ts` / `web/index.html` promise and
+reveal strings) lives in code, not artifacts, so the linter can't see it — eyeball discipline
+for now; revisit if a string-extraction pass earns its keep (THREADS §3).
+
 ## 6. Facts — origin and stances
 
 ### 6.1 Origin is not review tier **[new — user-named]**
@@ -323,6 +359,8 @@ pinned by `test/session.test.ts` (20 cases); this list is the record. **[validat
 5. **LLM seams last** — primers, expansions, thought restatement, draft-node creation — each
    behind §2.5 gates; **voice linter lands immediately before this phase** (its rule set now
    includes §5.4).
+   **Linter half shipped 2026-07-04** — `src/lint.ts` + `test/lint.test.ts` (76/76 with all
+   suites); severity model and scope rulings in §5.6. The seams are next.
 
 ## 9. Open questions
 
