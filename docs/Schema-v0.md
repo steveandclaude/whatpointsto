@@ -83,26 +83,36 @@ side-by-side, so the data holds both.
 ## 4. The reducer contract
 
 ```
-reduce(map, answers, opts?) → {
+reduce(map, answers, factStances?, opts?) → {
   credences,    // question → outcome → probability (softmax per question)
   scores,       // raw log-odds, backstage only — never user-facing
   movements,    // every applied delta with its source and whyCopy
   firedRules,   // incl. naive (ghost) vs applied for redirects
-  activeFacts,  // baseline + triggered − superseded
+  activeFacts,  // baseline + triggered − superseded (stances never touch this)
   contested,    // surfaced two-sided edges, no effect applied
-  tensions      // declared frictions whose answers are co-held
+  tensions,     // declared frictions whose answers are co-held
+  suppositions, // facts whose applied influence rests on a 'suppose' stance
+  parked        // facts exerting nothing by stance (want-more / dispute), reason on face
 }
 ```
 
 Pipeline: activate facts (baseline + option-triggered, minus superseded) → init scores at
 `basePrior ?? -priorScale·(assumptionCost−1)` (cheaper outcomes start ahead — assumption
-cost is the organizing spine) → apply active uncontested edges → fire rules (calibrated
+cost is the organizing spine) → apply active uncontested edges (skipping stance-parked
+facts — a parked fact's contested readings leave the table too) → fire rules (calibrated
 side of redirects) → surface tensions → softmax per question.
 
+**Fact stances (engine v0.2, Interaction-Design §6.2):** `factStances` maps factId →
+`accept | suppose | want-more | dispute`. Unstanced facts behave as accepted (stances are
+lazily elicited; sparse records cost nothing). A supposed fact counts like accepted and is
+listed in `suppositions` only if its edges actually moved something. Want-more/dispute facts
+stay active (visible) but participate in nothing. Stances on inactive or unknown facts are
+inert, symmetric with unanswered positions.
+
 **Purity is load-bearing.** Derived analyses are re-runs:
-- `counterfactual(map, answers, position, option)` — the one-tap flip.
-- `sensitivity(map, answers)` — rank answered positions by max total-variation shift
-  under their most-moving flip. This readout *is* the product (seed §5.3).
+- `counterfactual(map, answers, position, option, factStances?)` — the one-tap flip.
+- `sensitivity(map, answers, factStances?)` — rank answered positions by max total-variation
+  shift under their most-moving flip. This readout *is* the product (seed §5.3).
 - `confidenceGap(result, matchedOutcome, statedStrength)` — the two-dimensional gap's
   second axis: stated strength vs. `supportedStrength(credence)`, in ladder steps.
 

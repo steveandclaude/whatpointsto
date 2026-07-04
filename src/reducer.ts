@@ -1,8 +1,10 @@
 /**
- * The cascade engine: a pure reducer over a BeliefMap and a set of answers.
+ * The cascade engine: a pure reducer over a BeliefMap, a set of answers, and
+ * (v0.2) a set of fact stances.
  *
- * Purity is the load-bearing property — sensitivity, counterfactual flips, and
- * the confidence gap are each a re-run with one input changed, not features.
+ * Purity is the load-bearing property — sensitivity, counterfactual flips,
+ * the confidence gap, and "see it without your suppositions" are each a
+ * re-run with one input changed, not features.
  * The reducer is provenance-blind (drafts and researched maps compute
  * identically); only presentation differs.
  *
@@ -15,6 +17,7 @@ import type {
   ContestedReading,
   Edge,
   FactId,
+  FactStance,
   OutcomeId,
   PositionId,
   QuestionId,
@@ -28,6 +31,13 @@ import { STRENGTH_LADDER } from './schema.js';
 
 /** positionId → chosen optionId. Unanswered positions simply exert no influence. */
 export type Answers = Readonly<Record<PositionId, string>>;
+
+/**
+ * factId → stance (engine v0.2). Unstanced facts behave as accepted — stances
+ * are lazily elicited, so sparse records must cost nothing. Stances on
+ * inactive or unknown facts are inert, symmetric with unanswered positions.
+ */
+export type FactStances = Readonly<Record<FactId, FactStance>>;
 
 export interface ReduceOptions {
   /**
@@ -85,6 +95,18 @@ export interface ReduceResult {
   contested: SurfacedContested[];
   /** Declared tensions whose co-held answers are all present. */
   tensions: SurfacedTension[];
+  /**
+   * Active facts whose applied influence rests on a 'suppose' stance — the
+   * payoff line "your landing leans on N suppositions; see it without them"
+   * is one re-run with these parked. A supposed fact that moved nothing
+   * (e.g. its only edge is contested) is honestly NOT listed.
+   */
+  suppositions: FactId[];
+  /**
+   * Active facts exerting nothing because of their stance — visible, with the
+   * reason on their face, never silently counted (Interaction Design §6.2).
+   */
+  parked: Array<{ fact: FactId; stance: 'want-more' | 'dispute' }>;
 }
 
 // ---------------------------------------------------------------------------
@@ -96,10 +118,17 @@ function edgeSourceActive(edge: Edge, answers: Answers, activeFacts: ReadonlySet
   return answers[edge.from.position] === edge.from.option;
 }
 
-export function reduce(map: BeliefMap, answers: Answers, opts: ReduceOptions = {}): ReduceResult {
+export function reduce(
+  map: BeliefMap,
+  answers: Answers,
+  factStances: FactStances = {},
+  opts: ReduceOptions = {},
+): ReduceResult {
   const priorScale = opts.priorScale ?? DEFAULT_PRIOR_SCALE;
 
   // 1. Active facts: baseline + triggered by chosen options, minus superseded.
+  //    Stances never touch activation — a parked fact stays visible in the
+  //    traversal; only its participation is gated.
   const active = new Set<FactId>();
   for (const f of map.facts) if (f.baseline) active.add(f.id);
   for (const p of map.positions) {
@@ -110,6 +139,14 @@ export function reduce(map: BeliefMap, answers: Answers, opts: ReduceOptions = {
   }
   for (const f of map.facts) if (f.supersededBy != null) active.delete(f.id);
 
+  const parked: Array<{ fact: FactId; stance: 'want-more' | 'dispute' }> = [];
+  for (const f of map.facts) {
+    const stance = factStances[f.id];
+    if (active.has(f.id) && (stance === 'want-more' || stance === 'dispute')) {
+      parked.push({ fact: f.id, stance });
+    }
+  }
+
   // 2. Scores start at basePrior (explicit, or derived inversely from cost).
   const scores: Record<OutcomeId, number> = {};
   for (const o of map.outcomes) {
@@ -118,10 +155,17 @@ export function reduce(map: BeliefMap, answers: Answers, opts: ReduceOptions = {
 
   const movements: Movement[] = [];
   const contested: SurfacedContested[] = [];
+  const supposed = new Set<FactId>();
 
-  // 3. Edges: apply effects of active, uncontested edges; surface contested ones.
+  // 3. Edges: apply effects of active, uncontested edges; surface contested
+  //    ones. A parked fact participates in NOTHING — its effects don't apply
+  //    and its contested readings leave the table (the user set the fact
+  //    itself aside, upstream of its readings).
   for (const e of map.edges) {
     if (!edgeSourceActive(e, answers, active)) continue;
+    const sourceFact = 'fact' in e.from ? e.from.fact : null;
+    const stance = sourceFact === null ? undefined : factStances[sourceFact];
+    if (stance === 'want-more' || stance === 'dispute') continue;
     if (e.contested) {
       contested.push({ edgeId: e.id, whyCopy: e.whyCopy, readings: e.contested.readings });
       continue;
@@ -130,6 +174,7 @@ export function reduce(map: BeliefMap, answers: Answers, opts: ReduceOptions = {
       if (!(oid in scores)) continue;
       scores[oid]! += delta;
       movements.push({ source: { type: 'edge', id: e.id }, outcome: oid, delta, whyCopy: e.whyCopy });
+      if (sourceFact !== null && stance === 'suppose') supposed.add(sourceFact);
     }
   }
 
@@ -176,7 +221,17 @@ export function reduce(map: BeliefMap, answers: Answers, opts: ReduceOptions = {
     });
   }
 
-  return { credences, scores, movements, firedRules, activeFacts: [...active], contested, tensions };
+  return {
+    credences,
+    scores,
+    movements,
+    firedRules,
+    activeFacts: [...active],
+    contested,
+    tensions,
+    suppositions: [...supposed],
+    parked,
+  };
 }
 
 // ---------------------------------------------------------------------------
@@ -189,9 +244,10 @@ export function counterfactual(
   answers: Answers,
   position: PositionId,
   option: string,
+  factStances?: FactStances,
   opts?: ReduceOptions,
 ): ReduceResult {
-  return reduce(map, { ...answers, [position]: option }, opts);
+  return reduce(map, { ...answers, [position]: option }, factStances, opts);
 }
 
 /** Max total-variation distance between two credence sets, across questions. */
@@ -219,8 +275,13 @@ export interface SensitivityEntry {
  * The sensitivity readout — the actual product. Ranks answered positions by
  * how much the landing moves under their most-moving flip.
  */
-export function sensitivity(map: BeliefMap, answers: Answers, opts?: ReduceOptions): SensitivityEntry[] {
-  const base = reduce(map, answers, opts);
+export function sensitivity(
+  map: BeliefMap,
+  answers: Answers,
+  factStances?: FactStances,
+  opts?: ReduceOptions,
+): SensitivityEntry[] {
+  const base = reduce(map, answers, factStances, opts);
   const entries: SensitivityEntry[] = [];
   for (const p of map.positions) {
     const chosen = answers[p.id];
@@ -228,7 +289,7 @@ export function sensitivity(map: BeliefMap, answers: Answers, opts?: ReduceOptio
     let best: { option: string; shift: number } | undefined;
     for (const o of p.options) {
       if (o.id === chosen) continue;
-      const flipped = counterfactual(map, answers, p.id, o.id, opts);
+      const flipped = counterfactual(map, answers, p.id, o.id, factStances, opts);
       const shift = divergence(base, flipped);
       if (!best || shift > best.shift) best = { option: o.id, shift };
     }

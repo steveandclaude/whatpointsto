@@ -223,6 +223,24 @@ test('carryback: post-commit the credence delta appears; a quiet trip diffs empt
   assert.deepEqual(s.carryback!.answersChanged, [{ position: 'B4', option: null }]);
 });
 
+test('carryback: a stance taken while away moves the unsealed credence delta (engine v0.2)', () => {
+  let s = createSession(uapMap, 'mirror');
+  s = run(
+    s,
+    { type: 'answer', position: 'B2', option: 'measurement' }, // F9, F10 live
+    { type: 'commit' },
+    { type: 'focus', target: t('fact', 'F9') },
+    { type: 'push', target: t('fact', 'F10'), reason: 'unpack' },
+    { type: 'stance', fact: 'F9', stance: 'dispute' },
+    { type: 'pop' },
+  );
+  const cb = s.carryback!;
+  assert.deepEqual(cb.answersChanged, []);
+  assert.deepEqual(cb.stancesChanged, [{ fact: 'F9', stance: 'dispute' }]);
+  assert.deepEqual(cb.factsWentLive, []);
+  assert.ok(cb.credenceShift! > 0, 'parking the radar hinge moves the landing');
+});
+
 test('carryback attaches to the resumed frame and clears on the next focus change', () => {
   let s = createSession(uapMap, 'peruse');
   s = run(

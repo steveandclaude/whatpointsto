@@ -160,6 +160,14 @@ User stance toward a fact, peer to `answers`, never inferred from behavior:
 Engine change (v0.2, small and pure): `reduce(map, answers, factStances?)`. Non-steering holds:
 stances are explicit, visible, reversible inputs.
 
+**Shipped 2026-07-04**: `reduce(map, answers, factStances?, opts?)`; `ReduceResult` gains
+`suppositions` and `parked`. Exactness decided in the build: stances never touch activation
+(a parked fact stays visible in the traversal); a parked fact's contested readings leave the
+table (the fact was set aside upstream of its readings); a supposed fact is a supposition
+only if its edges actually moved something — supposing a contested-only fact leans on
+nothing; stances on inactive/unknown facts are inert, like unanswered positions. Deferred:
+suppose as *reading-adoption* on a contested edge needs a reading payload — not in v0.2.
+
 ### 6.3 The trust layer — authorities and graded testimony stances **[new — user-named]**
 
 Sources don't become the ontology (Direction E stays demoted); they become a **layer** the
@@ -272,6 +280,8 @@ pinned by `test/session.test.ts` (20 cases); this list is the record. **[validat
 2. **Engine v0.2** — `factStances` input; suppositions surfaced in `ReduceResult`. (The trust
    layer compiles to stance defaults, so it rides this with no further engine work; the
    authority taxonomy and freeform-trust mediation land in phase 5.)
+   **Shipped 2026-07-04** — reducer + carryback/guide-policy threading; exactness notes in
+   §6.2; 65/65 with all suites.
 3. **Content fixes** — decompose B5; authored `shortLabel`s; begin origin/authority fields
    (schema v0.2) with UAP sources restructured.
 4. **Scene renderer on the session engine** — replace both the first renderer's elicitation

@@ -20,6 +20,15 @@ export type Provenance = 'model-drafted' | 'research-backed' | 'human-reviewed';
 
 export type FactStrength = 'STRONG' | 'MODERATE' | 'WEAK';
 
+/**
+ * User stance toward a fact — a first-class reducer input, peer to answers,
+ * never inferred from behavior (Interaction-Design §6.2). accept: edges apply
+ * (the unstanced default made explicit); suppose: edges apply and the
+ * traversal is marked; want-more / dispute: the fact exerts nothing and is
+ * surfaced as parked. The trust layer (§6.3) compiles to defaults of these.
+ */
+export type FactStance = 'accept' | 'suppose' | 'want-more' | 'dispute';
+
 /** The qualitative arrival/holding ladder. Never numbers in the user's face. */
 export type StrengthWord = 'lean' | 'think' | 'confident' | 'certain';
 export const STRENGTH_LADDER: readonly StrengthWord[] = [

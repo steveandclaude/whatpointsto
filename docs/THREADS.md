@@ -13,7 +13,7 @@
 > complementary) · `TENSION` (countervailing pair, kept alive on purpose) · `PARKED` (deliberate,
 > revisit condition noted) · `RETIRED` (dead, with cause).
 
-_Last updated: 2026-07-04 (session: session engine v0 shipped — Arc A item 1)._
+_Last updated: 2026-07-04 (session: Arc A items 1–2 shipped — session engine v0 + engine v0.2)._
 
 ---
 
@@ -25,7 +25,9 @@ The agreed next arc (Interaction-Design §8):
    the discovered `commit`; pure reducer; exact carryback; Suppose sandbox; mode contracts as
    data; guide policy v0) + `test/session.test.ts` (55/55 with the map suites). The decisions
    the reducer forced are recorded in Interaction-Design §7.1.
-2. `BUILD` **Engine v0.2** — `factStances` input; suppositions surfaced in `ReduceResult`.
+2. `BUILD` **Engine v0.2** — **shipped 2026-07-04**: `reduce(map, answers, factStances?, opts?)`;
+   `ReduceResult.suppositions` + `.parked`; stances threaded through counterfactual/sensitivity
+   and the session engine's carryback + guide policy. Exactness notes in Interaction §6.2.
    Trust layer rides this for free (Interaction §6.3).
 3. `BUILD` **Content fixes** — decompose B5 (double-barreled, Interaction §5.4); authored
    `shortLabel`s; structured authorities on UAP sources (schema v0.2).

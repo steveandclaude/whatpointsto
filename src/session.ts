@@ -36,11 +36,13 @@
 import type {
   BeliefMap,
   FactId,
+  FactStance,
   OutcomeId,
   PositionId,
   StrengthWord,
 } from './schema.js';
 import { STRENGTH_LADDER } from './schema.js';
+import type { FactStances } from './reducer.js';
 import { divergence, reduce, sensitivity } from './reducer.js';
 
 // ---------------------------------------------------------------------------
@@ -87,12 +89,6 @@ export function sameTarget(a: FocusTarget | null, b: FocusTarget | null): boolea
 // ---------------------------------------------------------------------------
 // Soft inputs carried by moves
 // ---------------------------------------------------------------------------
-
-/**
- * Stance toward a fact — a first-class reducer input (engine v0.2), never
- * inferred from behavior (Interaction Design §6.2).
- */
-export type FactStance = 'accept' | 'suppose' | 'want-more' | 'dispute';
 
 /**
  * A reaction is a demand signal, NOT an engine input — the spike's chips
@@ -230,7 +226,7 @@ export const MODE_CONTRACTS: Record<Mode, ModeContract> = {
 /** The soft inputs a workspace holds. The record is the user's; the sandbox is play. */
 export interface Workspace {
   answers: Readonly<Record<PositionId, string>>;
-  stances: Readonly<Record<FactId, FactStance>>;
+  stances: FactStances;
 }
 
 /**
@@ -245,7 +241,7 @@ export interface StackFrame {
   reason: string;
   snapshot: {
     answers: Readonly<Record<PositionId, string>>;
-    stances: Readonly<Record<FactId, FactStance>>;
+    stances: FactStances;
     thoughtCount: number;
   };
 }
@@ -438,8 +434,8 @@ function carrybackFrom(map: BeliefMap, frame: StackFrame, state: SessionState): 
     stance: now.stances[fact] ?? null,
   }));
 
-  const was = reduce(map, before.answers);
-  const is = reduce(map, now.answers);
+  const was = reduce(map, before.answers, before.stances);
+  const is = reduce(map, now.answers, now.stances);
   const factsWentLive = is.activeFacts.filter((f) => !was.activeFacts.includes(f));
 
   return {
@@ -643,7 +639,7 @@ function gateWeight(map: BeliefMap, positionId: PositionId): number {
 export function guideOffers(map: BeliefMap, state: SessionState): GuideOffer[] {
   const contract = MODE_CONTRACTS[state.mode];
   const ws = contract.workspace === 'sandbox' ? (state.sandbox ?? emptyWorkspace()) : state.record;
-  const current = reduce(map, ws.answers);
+  const current = reduce(map, ws.answers, ws.stances);
   const offers: GuideOffer[] = [];
 
   // 1. Dispute routing (validated in the spike): a disputed fact whose bearsOn
@@ -730,7 +726,7 @@ export function guideOffers(map: BeliefMap, state: SessionState): GuideOffer[] {
         score: 42,
       });
     }
-    for (const s of sensitivity(map, ws.answers)) {
+    for (const s of sensitivity(map, ws.answers, ws.stances)) {
       const target: FocusTarget = { kind: 'position', id: s.position };
       if (sameTarget(state.focus, target)) continue;
       offers.push({
