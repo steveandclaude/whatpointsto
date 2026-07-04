@@ -310,6 +310,16 @@ pinned by `test/session.test.ts` (20 cases); this list is the record. **[validat
 4. **Scene renderer on the session engine** — replace both the first renderer's elicitation
    wall and the spike; Mirror mode first (arrival → seal → focus walk → relight payoff), then
    Peruse; Suppose after engine v0.2.
+   **Shipped 2026-07-04** — `web/scene.ts` + `web/index.html` at `/`; Mirror end-to-end plus a
+   Peruse toggle (mode contracts enforced by the engine; the peruse frame simply has no answer
+   chips to render). Suppose UI still pending. Every interaction dispatches a typed move; the
+   guide rail renders `guideOffers` rank verbatim and only dedups the frame already on screen.
+   The spike's relation sectors and assumption face were lifted and made map-generic; the
+   deterministic overview layout is computed from any map (outcomes arc by question, positions
+   ordered by scope centroid, facts pulled toward adjacency). `web/app.ts` and `web/spike.*`
+   deleted. Browser-validated on UAP (full walk incl. digression carryback, stances,
+   parked/supposition payoffs, both gaps, T1/T2, contested F3/F10, R3 ghost-vs-solid) and on
+   the singularity draft (DRAFT register, no facts, generic layout).
 5. **LLM seams last** — primers, expansions, thought restatement, draft-node creation — each
    behind §2.5 gates; **voice linter lands immediately before this phase** (its rule set now
    includes §5.4).
@@ -358,6 +368,26 @@ pinned by `test/session.test.ts` (20 cases); this list is the record. **[validat
     supportedStrength/load language; (b) the register would need to be invitation, never
     charge (silent-abandonment risk), with any conflict-seeking objective living in the
     inspectable guide policy.
+11. **Idea on record — the answer-shape probe (keeper-shape refinement).** Raised 2026-07-04;
+    captured as a *possibility*, not a chosen direction — no build weight attached. The idea:
+    a user who answers a fork is often answering against an implicit *shape* of the
+    proposition — "a multi-decade secret couldn't be kept in government" imagines a government
+    keeper with FOIA exposure and oversight — while evidence on the table asserts a different
+    shape (the testimony places custody with private contractors in highly compartmented
+    setups, outside those channels). The surface could offer the variant shape back as a fork:
+    "could that shape of truth be viable?" Discussion notes, for whichever session weighs it:
+    it is a subtler cousin of the single-proposition rule (§5.4) — the prompt is
+    single-barreled but the reference class is underspecified; three candidate homes, cheapest
+    first: (a) content surgery — decompose the position by keeper shape (the B5→B5a/B5b
+    operation) plus an author-researched fact bearing on the new fork, after which the
+    assumption face does the work with no new machinery; (b) an authored follow-up relation
+    ("option held × fact live → offer fork X with this copy") — which would be the first
+    concrete move-library artifact (§7); (c) answer-conditional guide offers (gateWeight is
+    structure-only today; dispute routing is stance-triggered — neither fires on this).
+    Overlaps §9.10's coherence probe in spirit ("what your answers haven't yet covered") but
+    is narrower and fully authorable, so it could ship as content long before derived
+    machinery. Register: invitation, never charge — the leak prior isn't wrong; the map is
+    showing the claim's actual shape. Frame ban applies verbatim.
 
 ---
 

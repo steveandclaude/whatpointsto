@@ -13,8 +13,9 @@
 > complementary) · `TENSION` (countervailing pair, kept alive on purpose) · `PARKED` (deliberate,
 > revisit condition noted) · `RETIRED` (dead, with cause).
 
-_Last updated: 2026-07-04 (session: Arc A items 1–3 shipped — session engine v0, engine v0.2,
-content/schema v0.2; seal-vocabulary surface ruling)._
+_Last updated: 2026-07-04 (session: scene renderer shipped on the session engine — Mirror
+end-to-end + Peruse toggle; first renderer and spike retired; answer-shape probe idea
+captured, unweighed)._
 
 ---
 
@@ -35,8 +36,13 @@ The agreed next arc (Interaction-Design §8):
    `FactSource {authority, citation?, retrievedAt?}` + `origin` in schema v0.2 (interim:
    authorities = the project research artifacts; the real-world taxonomy is the trust-layer
    pass). Conformance suite deliberately updated — 11 positions, 67/67.
-4. `BUILD` **Scene renderer on the session engine** — Mirror mode first; replaces both the
-   first renderer's wall and the spike.
+4. `BUILD` **Scene renderer on the session engine** — **shipped 2026-07-04**: `web/scene.ts` +
+   `web/index.html` at `/`. Mirror end-to-end (arrival door → promise → guided focus walk →
+   commit → relight reveal with gap/tension/contested/rule frames) + a Peruse toggle; every
+   interaction dispatches a typed move; guide rail renders `guideOffers` rank verbatim (renderer
+   only dedups the frame already on screen). Suppose UI not yet built (engine support shipped).
+   `web/app.ts` and the spike are deleted; the map-generic deterministic layout replaced the
+   spike's UAP hardcodes. Browser-validated on UAP (full walk) and the singularity draft.
 5. `BUILD` **Voice linter, then LLM seams** — linter rule set now includes single-proposition
    authoring rules and the seal-word surface ban (Interaction §5.5); seams per Platform §2.5
    gates.
@@ -97,10 +103,22 @@ The agreed next arc (Interaction-Design §8):
   not a direction: prompt seemingly-unrelated forks whose joint grant would commit the user to
   derived riders, offered back as forks ("what do you think of Z?"). Discussion notes and
   would-be constraints in Interaction §9.10 (raised 2026-07-04)
+- `OPEN` **Answer-shape probe / keeper-shape refinement (idea, unweighed)** — recorded as a
+  possibility, not a direction: an answer is often given against an implicit shape of the
+  proposition ("secrets leak" imagines a government keeper), while live testimony asserts a
+  different shape (private contractors, highly compartmented); offer the variant shape back as
+  a fork ("could that shape of truth be viable?"). Candidate homes (content decomposition of
+  B4 / authored follow-up relation = first move-library artifact / answer-conditional guide
+  offers) and constraints in Interaction §9.11 (raised 2026-07-04)
 - `OPEN` **B5b kind question** — is the secondhand discount a portable epistemic standard?
   Kept world-belief for now because F2/F3 must bear on it (I1); revisit if the cross-map
   fingerprint wants it — UAP-Port-Notes §6
-- `OPEN` **Mode entry** — Peruse-first or Mirror-first for a fresh visitor — Interaction §9.4
+- `OPEN` **Guide visited-memory** — policy v0 re-offers payoff frames the user has already
+  visited (no "seen" signal in the ranking); the renderer dedups only the frame currently on
+  screen. Does visited-ness belong in the policy (a session-derived input, seal-safe) or is
+  re-offering correct? Found building the scene renderer, 2026-07-04
+- `OPEN` **Mode entry** — Peruse-first or Mirror-first for a fresh visitor — Interaction §9.4.
+  The scene renderer provisionally enters Mirror (belief-first door); the question stays open
 - `OPEN` **Stack depth cap** — observation needed, not theory — Interaction §9.6
 
 ## 4. Countervailing tensions (kept alive on purpose)
@@ -120,8 +138,6 @@ The agreed next arc (Interaction-Design §8):
   Interaction §7.
 - `TENSION` **Lazy elicitation vs. profile completeness**: trust/knowledge asked only when a
   fact matters; accept sparse profiles — Interaction §6.3.
-- `TENSION` **Spike disposability vs. hardening temptation**: `web/spike.*` stays throwaway;
-  the real scene renderer is rebuilt on the session engine — Interaction §8.4.
 
 ## 5. Parked
 
@@ -159,6 +175,13 @@ The agreed next arc (Interaction-Design §8):
   the top unanswered UAP fork — agreeing with the map author's "load-bearing fork" note on B2 —
   guideOffers, 2026-07-04.
 - Windows quirk: `node --test` needs the glob form (package.json), not a trailing-slash dir.
+- The seal held with zero renderer effort in the scene build: bars/gaps/sensitivity render
+  behind one `revealed` check, and the engine-side carryback guard meant nothing credence-shaped
+  existed to leak pre-commit — the "engine-enforced, not renderer discipline" prediction held —
+  web/scene.ts, 2026-07-04.
+- Guide policy v0 never offers rule frames, so the R3 ghost-vs-solid moment was unreachable
+  until the reveal hub grew a "what moved beneath you" section (renderer-side navigation, not a
+  policy change) — web/scene.ts frameOverview, 2026-07-04.
 
 ## 7. Retired
 
@@ -166,3 +189,6 @@ The agreed next arc (Interaction-Design §8):
   anchor — Platform §6.
 - `RETIRED` The gotcha-machine fear as stated: tested, did not appear; replaced by the
   over-accommodation cluster — experiments/tone/RESULTS.
+- `RETIRED` Spike disposability vs. hardening temptation (§4 tension): resolved as designed —
+  the spike was deleted 2026-07-04 when the scene renderer landed; only its validated geometry
+  (relation sectors, assumption face) was lifted, made map-generic — web/scene.ts.

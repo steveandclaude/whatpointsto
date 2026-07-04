@@ -1,5 +1,5 @@
 // Minimal static server for the dev renderer. No dependencies on purpose.
-// Serves the repo root so /web/index.html can import /dist/web/app.js.
+// Serves the repo root so /web/index.html can import /dist/web/scene.js.
 import { createServer } from 'node:http';
 import { readFile } from 'node:fs/promises';
 import { extname, join, resolve, sep } from 'node:path';

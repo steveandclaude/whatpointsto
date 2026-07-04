@@ -10,8 +10,8 @@ the singularity scaffold the second.
 
 - `npm test` — tsc strict build + node:test (the only CI-grade verification).
   Windows note: the glob form in package.json is required; `node --test dist/test/` fails here.
-- `npm run web` — build + dev server at http://localhost:8137/ (first renderer at `/`,
-  throwaway focus-graph spike at `/web/spike.html`).
+- `npm run web` — build + dev server at http://localhost:8137/ (the scene renderer,
+  `web/scene.ts`, driven by the session engine; the first renderer and the spike are retired).
 
 ## Doc tree — read in this order
 
