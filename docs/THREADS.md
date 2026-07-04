@@ -14,8 +14,8 @@
 > revisit condition noted) · `RETIRED` (dead, with cause).
 
 _Last updated: 2026-07-04 (session: scene renderer shipped on the session engine — Mirror
-end-to-end + Peruse toggle; first renderer and spike retired; answer-shape probe idea
-captured, unweighed)._
+end-to-end + Peruse toggle; first renderer and spike retired; answer-shape probe idea and
+BYO-inference thread captured, unweighed)._
 
 ---
 
@@ -83,6 +83,11 @@ The agreed next arc (Interaction-Design §8):
   finding: full-skeptic ceiling on H1 is ~48% in a 7-outcome question, so either magnitudes are
   timid or supported-confidence must normalize by achievable range — Platform §8.5;
   src/reducer.ts:240 banner; finding from 2026-07-04 session (confidence-gap demo)
+- `OPEN` **BYO inference** — run the LLM seams on the user's own model (their agent as MCP
+  client; propose-only tools; cache-and-review flywheel turns donated generations into shared
+  linted content). Near-native fit: backstage gates + typed artifacts + move-log sessions were
+  already the right architecture. Edges: record sovereignty, seal-is-advisory-vs-own-agent,
+  tone jurisdiction, ToS, demand-signal loss in local shapes — Platform §8.8 (raised 2026-07-04)
 - `OPEN` **Router implementation** — belief → (map, position) match quality bar; partial-match
   rendering — Platform §8.2
 - `OPEN` **Strength vocabulary** — explicit "nothing could change my mind" rung? — Platform §8.4
