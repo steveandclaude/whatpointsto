@@ -16,7 +16,18 @@
 _Last updated: 2026-07-04 (session: voice linter shipped — src/lint.ts, errors fail
 `npm test` / warnings print for review, design record in Interaction §5.6; first real
 findings are two double-barrel warnings on the singularity draft's labels; §1 item 5 is now
-half done — LLM seams are next)._
+half done — LLM seams are next. Same day, later: scene renderer visual register redesigned
+to light mode on a user brief — surveyor's-sheet register, penciled→inked reveal, no
+truncated panel copy; record in Interaction §8.4; singularity gained draft-tier
+shortLabels. New §3 idea captured, unweighed: dissolve the panel into the scene,
+click-to-surface options in place — Interaction §9.12. Third session, same day: that
+dedicated exploration ran — dissolution direction user-affirmed: content goes home to its
+object; three organs (scene / focus card / **journey rail**) + register banner; the rail is
+the walk made visible; seam-invitation offer family designed, defining the LLM seams' entry
+points, so the seams build is unblocked; design record in new Interaction §10. Fourth:
+stage 1 of the dissolution built by a delegated fork — journey rail + register banner +
+slimmed panel, 76/76, browser-validated on both maps; overlay-not-reflow ruling; build
+plan docs/plans/2026-07-04_journey-rail-stage1.md; three renderer findings in §6)._
 
 ---
 
@@ -129,7 +140,28 @@ The agreed next arc (Interaction-Design §8):
 - `OPEN` **Guide visited-memory** — policy v0 re-offers payoff frames the user has already
   visited (no "seen" signal in the ranking); the renderer dedups only the frame currently on
   screen. Does visited-ness belong in the policy (a session-derived input, seal-safe) or is
-  re-offering correct? Found building the scene renderer, 2026-07-04
+  re-offering correct? Found building the scene renderer, 2026-07-04 — direction found in
+  the §10 session: the journey rail is the seen-surface, and visited-ness enters the policy
+  as an explicit session-derived input (Interaction §10.3)
+- `OPEN` **Dissolve the panel → three organs + journey rail (direction user-affirmed
+  2026-07-04)** — the dedicated session §9.12 asked for ran the same day. The shape:
+  content goes home to its object (sectors promoted from navigation to content; a ballot of
+  option plaques at the fork; stance chips at the fact; carryback on the resumed focus
+  card; non-node frames as center-stage cards tethered to their relit participants), while
+  the session's own voice gets organs — a compact focus card, a thin register banner, and
+  the **journey rail**: the walk made visible (coverage dots; emphasis only from the user's
+  own signals pre-commit, credence-derived emphasis post-commit; guide offers at the head
+  in rank order; commit at the foot). Seam-invitation offer family designed (unrouted
+  disputes just below dispute routing; want-more accumulation climbing with count;
+  KC-misses dormant behind §9.3) — it defines the LLM seams' UI entry points, so the seams
+  build is unblocked and does not wait on visual dissolution. Guidance stays deterministic;
+  policy v1 = LLM re-ranker at trigger boundaries through the same typed-offer channel.
+  Staged build candidate (chrome migration → in-place elicitation → focus card + center
+  stage); build not ordered — seams keep register order. Full record: Interaction §10
+  (§9.12 kept as the original capture) — **stage 1 shipped 2026-07-04**: journey rail +
+  register banner + slimmed panel, built by a delegated fork off
+  docs/plans/2026-07-04_journey-rail-stage1.md, browser-validated both maps; rulings +
+  findings in the §10.6 shipped marker
 - `OPEN` **Linter coverage of renderer-embedded copy** — the scene renderer speaks promise/
   reveal copy as code literals (`web/scene.ts`, `web/index.html`) the artifact linter can't
   see; eyeball discipline for now; revisit if a string-extraction or copy-table pass earns
@@ -205,6 +237,21 @@ The agreed next arc (Interaction-Design §8):
   exactly as designed. A naive `\band\b` scan would have false-positived on legitimate noun
   lists ("speed, distance, and acceleration"), so the heuristic keys on clause-joining
   signals instead — test/lint.test.ts, 2026-07-04.
+- The panel's promise crumbs were already duplicated in-scene: `retarget()` pins digression
+  origins (§4.3's "smaller presence") while `crumbsHtml()` restated them in the panel —
+  §9.12(a)'s redundancy claim proven in code; the journey rail absorbs the pinned column —
+  web/scene.ts, 2026-07-04.
+- Flex-column scroll containers silently squeeze `overflow: hidden` children to zero
+  height — the rail's zone captions vanished until `#rail > * { flex-shrink: 0 }`; cousin
+  of the §8.4 specificity trap (the styling surprise lives in CSS defaults, not the
+  renderer) — web/index.html, 2026-07-04.
+- A design keyed on fork-target reactions silently no-ops if no surface offers them: react
+  rows existed only on fact/tension/gap frames, so §10.3's flagged emphasis was unreachable
+  until position frames gained a react row in the stage-1 build — web/scene.ts, 2026-07-04.
+- Overlay beats reflow for edge surfaces: hover-expanding an in-flow rail rescales the
+  whole SVG viewBox (~20% scene wobble); absolute-overlay expansion keeps scene geometry
+  still — the stage-3 focus card is an overlay candidate for the same reason —
+  web/index.html, 2026-07-04.
 
 ## 7. Retired
 

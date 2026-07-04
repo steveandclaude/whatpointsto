@@ -356,11 +356,25 @@ pinned by `test/session.test.ts` (20 cases); this list is the record. **[validat
    deleted. Browser-validated on UAP (full walk incl. digression carryback, stances,
    parked/supposition payoffs, both gaps, T1/T2, contested F3/F10, R3 ghost-vs-solid) and on
    the singularity draft (DRAFT register, no facts, generic layout).
+   **Visual register redesigned 2026-07-04 (user brief: light mode, no warm-cream/terracotta
+   defaults, no text hidden behind ellipses).** The light register is a surveyor's field
+   sheet: cold paper, blue-black ink, kind hues ultramarine/violet/petrol and **mulberry for
+   landings & credence**; serif prompts, mono annotations, no webfont dependency
+   (offline-first holds). The seal's visual translation: **pre-commit the sheet is penciled**
+   (outlined shapes; the promise register is dashed graphite) and **commit inks it** (fills
+   flood, bars rise, the reveal register is mulberry ink) — pencil→ink is the §4.1 "unseal is
+   a visual event" made literal. Readability rule now standing: panel copy never truncates
+   (chips/offers/crumbs wrap in full); scene labels wrap to 3–4 balanced lines with an
+   ellipsis only past that; relation-sector bands were made disjoint on the circle (feeds
+   −135…−45°, evidence 155…205°) after the old edges collided labels. Draft register: hatched
+   pencil sheet + rubber-stamp red DRAFT.
 5. **LLM seams last** — primers, expansions, thought restatement, draft-node creation — each
    behind §2.5 gates; **voice linter lands immediately before this phase** (its rule set now
    includes §5.4).
    **Linter half shipped 2026-07-04** — `src/lint.ts` + `test/lint.test.ts` (76/76 with all
-   suites); severity model and scope rulings in §5.6. The seams are next.
+   suites); severity model and scope rulings in §5.6. The seams are next. Their UI entry
+   points are the seam-invitation offers designed in §10.4 — the seams build reads its doors
+   from there and does not wait on the visual dissolution.
 
 ## 9. Open questions
 
@@ -426,6 +440,207 @@ pinned by `test/session.test.ts` (20 cases); this list is the record. **[validat
     is narrower and fully authorable, so it could ship as content long before derived
     machinery. Register: invitation, never charge — the leak prior isn't wrong; the map is
     showing the claim's actual shape. Frame ban applies verbatim.
+12. **Idea on record — dissolving the panel into the scene (focus-adjacent rendering).**
+    Raised 2026-07-04, right after the light-register redesign; captured as a *possibility*,
+    not a chosen direction — no build weight attached; the user wants a dedicated session on
+    it ("I don't quite know how that would work"). The instinct: the sidebar duplicates what
+    the scene already says spatially — the relation sectors hold the very neighbors the
+    panel restates as chip lists — so far more of the focus/questioning surface could live
+    in the surroundings of the focused entity. The user's sketch of the feel: **clicking an
+    item surfaces its further options in place** — e.g. clicking a fact surfaces the stance
+    moves right there (accept / grant for now / want more / dispute), rather than in a
+    frame beside the map. Discussion notes, for the session that weighs it: (a) the
+    redundancy is real and half-acknowledged by the docs already — carryback "attaches a
+    strip to the resumed frame" (§4.3) and promise origins keep a pinned scene presence, so
+    several panel strips are natural scene residents; (b) candidate shapes, cheapest first:
+    click-to-surface affordance clusters on scene items (the user's sketch — stance chips at
+    a fact, option plaques at a fork, elicitation becoming spatial; answering inks the
+    chosen plaque); relational chip rows leave the panel while prompt + transient strips
+    stay in a compact focus card; edge whyCopy revealed along its edge; full dissolution
+    last; (c) the hard cases are exactly why §4.2 made non-node focus targets first-class —
+    tension/gap/rule frames are relational and node-less, and dissolving the panel must not
+    regress them into nothing (the "guided one-at-a-time vs. relational payoffs" tension
+    cuts both ways here); (d) wherever the guide rail renders, the policy's rank must stay
+    legible (curation risk, §7) — spatial placement that obscures rank is a regression, not
+    a redesign; (e) option labels are full assertible propositions (§5.4) and scene text
+    real estate is contested (the label-collision fix this session is the proof), so
+    in-scene elicitation needs a layout answer, not just intent; (f) mode contracts still
+    gate affordances (Peruse renders no answer or stance chips); (g) every surfaced option
+    still dispatches the same typed move — this is a renderer-surface question, the session
+    grammar is untouched; (h) **freedom needs a counterweight** (user, same conversation):
+    with more clicking freedom the guide's job widens from "what to look at next" to "when
+    to bring the model in before continuing" — seam invitations (have Claude research this
+    disputed fact; draft a primer for this want-more; restate this thought) become a
+    first-class guide-offer family with *structural, inspectable* triggers (unrouted
+    disputes, accumulating want-mores, knowledge-check misses — stance/structure-derived,
+    so seal-safe pre-commit), ranked and worded like every other offer (lintable why copy).
+    §2.5 pull-not-push holds throughout: the interface invites, the user invokes, the model
+    never enters the record uninvited. Rhymes with BYO-Inference §5a, where those same
+    stances already form the agent's research queue — this is the same demand signal,
+    surfaced to the user in the moment instead of pulled by an agent later. Payoff if it
+    works: the scene reclaims the panel's 470px and the walk feels like inhabiting the map
+    rather than reading beside it — with the guide, not the layout, carrying the discipline.
+    *(The dedicated session ran later the same day — the design record is §10; this entry
+    stays as the original capture.)*
+
+## 10. Dissolving the panel — three organs and the journey rail
+
+**[designed 2026-07-04, the dedicated session §9.12 asked for; direction user-affirmed,
+details not frozen; build not ordered — the register keeps the LLM seams next (§8.5)]**
+
+Graduates §9.12 (kept above as the original capture). Provenance: user riffs + a
+code-grounded pass over `web/scene.ts` / `web/index.html` as shipped in the light register
+(§8.4).
+
+### 10.1 The organizing principle
+
+Every sentence the panel renders is *about* something: a scene object (a fork's options, a
+fact's text, an edge's story, the assumption an outcome rests on) — or the session itself
+(the promise, the guide's suggestions, the commit act, notices). So the dissolution is not
+"move the panel into the scene" but:
+
+> **Content goes home to its object. The session's own voice gets organs of its own.**
+
+The panel deserved to die for restating **space** — neighbors the relation sectors already
+place (§9.12(a); proven in code: `retarget()` already pins digression origins in-scene as
+§4.3's "smaller presence" while `crumbsHtml()` restated them in the panel). But nothing
+anywhere showed **time** — where you've been, what you flagged, what's unfinished, what's
+worth returning to. That is the missing dimension, and it becomes the third organ:
+
+- **Scene** — objects in space. A node's perimeter budget is hard (the §8.4 label-collision
+  fix is the proof); it carries only the object's own affordances.
+- **Focus card** — the focused thing's full text. §5.1 (no shorthand) + §5.4 (option labels
+  are full assertible propositions) make total dissolution a mirage: a readable block
+  survives in any honest version, exactly as §9.12(b)'s "compact focus card" anticipated.
+  It docks *at the focus* — the −45°…30° arc is unclaimed by relation sectors (feeds
+  −135…−45, rests-on/speaks-to 30…150, evidence 155…205), and neighbors orbit at ~275px, so
+  the focus layout has already cleared the real estate — and it contains only the focused
+  thing's own content, everything relational having moved onto sector members.
+- **Journey rail** — the session made visible (§10.3). Plus a thin top **register banner**
+  (promise/reveal line, one-shot notices, DRAFT stamp — register-level voice, object-less).
+
+### 10.2 Dispositions
+
+| Panel resident today | Destination |
+|---|---|
+| Crumbs ("we'll come back to…") | Deleted — the pinned origins `retarget()` already draws *are* the crumbs; they gain the pop click + promise wording, and the rail absorbs the column |
+| Carryback strip | Attaches to the resumed focus card — §4.3 said "attaches a strip to the resumed frame" verbatim |
+| Relational chip rows (evidence-that-speaks-to, where-this-points, bears-on, runs-from, fires-from, answers-in-friction) | Deleted as lists — sector members *are* these chips. Sectors are promoted from navigation to content: each member wears the payload the panel said about it (assumption-face text + held ✓/✗ on rests-on members; `edgeWhy` along its edge) |
+| Answer options ("Where do you stand?") | A **ballot** docked in the free −45°…30° band at the focused fork — stacked full-width plaques (never radial scatter; the label-collision lesson), penciled; the chosen plaque inks. Input-echo, not credence: seal-safe pre-commit, same as the answered rings that already render |
+| Stance row, react row | Short-chip rows riding the focused fact / focus card — short labels genuinely fit at the node |
+| Prompt, fact text, sources, badges, notes | The focus card |
+| Non-node frames (tension, rule, edge, question, gap) | Center-stage card **tethered to its relit participants** — `highlightIdsFor()` already computes exactly those nodes; today they sit lit but scattered while the explanation lives in the sidebar. This is §9.12(c) answered: the frames keep frames; only the container moves |
+| Pre-commit overview | Dissolves — question titles already render as scene captions, legend becomes a corner key, answered-dots + promise live in rail/banner |
+| Post-commit overview (the reveal) | **Kept as the one whole-sheet moment** (leading answer, unobjected): an overlay dismissed into the relit scene. Commit is when the sheet is inked *and read whole*; post-commit the seal no longer constrains, so a wall is finally honest; it is the home of "what moved beneath you" and the only door to rule frames |
+| Guide rail + commit bar | The journey rail — offers at its head in rank order, commit at its foot |
+
+Net: the 470px sidebar dies; fixed chrome shrinks to the rail (~48px collapsed) + the top
+banner; the 1400×920 viewBox renders ~50% larger on screen, easing every label problem.
+
+### 10.3 The journey rail — the walk made visible
+
+The user's organ (sketched as "a vertical row of dots where some get an emphasis treatment
+and one-liners about why the user may want to revisit"), given legs: the scene shows only
+space; the rail shows **time**. It is also the standing answer to "I can click anything —
+but what *should* I click next?", which is §1's attention problem restated: freedom of
+movement plus an always-visible, specific, ranked next move. The north star is the
+interface guiding a conversation — the session log is the transcript; the rail is the
+transcript made visible; the guide policy is the interlocutor choosing the next question.
+
+- **Geometry**: a ~48px vertical spine, expanding one-liners on hover/focus. **Hard cap:
+  one line per notch** — full text lives in the focus card the notch links to; the cap is
+  what keeps the rail from creeping back into a panel. Side: leaning **left** (it absorbs
+  the pinned-origin column already drawn at x≈130); right stays a live alternative.
+- **Zones, top→bottom — the conversation's arc**: **ahead** (guide offers in rank order;
+  reading order = rank order, so §9.12(d) legibility survives unchanged; seam invitations
+  render here, §10.4) → **here** (the current focus, tethered to its scene node) →
+  **behind/around** (coverage dots: one per fork, filled when answered, hollow when not;
+  kept-promise ticks) → **foot: commit** — the terminal notch; the walk literally leads
+  down the trail to the inking moment.
+- **Emphasis vocabulary, split on the seal**: pre-commit the rail may echo only *the user's
+  own visible inputs* — `unconvinced` / `hadn't-considered` reactions (the first payoff
+  surface the `react` move has ever had), **wavering** (repeated `answer` moves on one
+  fork: a pure move-log derivation), want-more / dispute stances — plus authored structure
+  (gate weight). Post-commit, credence-derived emphasis joins: sensitivity ("this one
+  answer is carrying your landing — flip it and you land elsewhere"). One-liners are
+  authored/templated copy → `lintNarration`, like guide `why` strings.
+- **Tension magnetism**: two answered dots in friction render pulled toward each other; the
+  pair opens the tension frame.
+- **Visited-memory resolves here** (THREADS §3): the rail is the seen-surface, and
+  visited-ness enters guide policy as an explicit session-derived input (seal-safe) — the
+  policy can then stop re-offering visited frames, or re-offer deliberately.
+- Scale caveat: dot-per-fork suits curated maps (UAP: 11); revisit density past ~20 forks.
+
+### 10.4 Seam invitations — the counterweight, designed
+
+§9.12(h) made concrete: a new guide-offer family whose triggers are structural,
+deterministic, and seal-safe.
+
+1. **Unrouted dispute** — a disputed fact with no unanswered `bearsOn` fork: the map cannot
+   metabolize the objection. Ranks immediately below dispute routing — the map's own answer
+   always outranks bringing the model in.
+2. **Want-more accumulation** — parked want-mores ≥ N; score climbs with count (the pop
+   reminder's pattern). This is BYO-Inference §5a's research queue surfaced in-moment.
+3. **Knowledge-check misses** — named but dormant until an entity/primer registry exists
+   (§9.3).
+
+`why` copy is lintable and frame-ban-bound like every offer. **Accepting is tier-specific
+and belongs to the seams build**: workbench — the queue is already the agent's
+pull-briefing (BYO §5a); door tier — a completion seam; chat tier — a deep link. Ordering
+consequence (resolving the 2026-07-04 handoff question): **this family defines the seams'
+UI entry points** — the seams build reads its doors from here, and does not wait on the
+visual dissolution stages.
+
+### 10.5 Guidance: coded vs. LLM
+
+"The interface guiding a conversation" decomposes into three jobs. (1) *Choosing the next
+question* — coded today, and demonstrably decent: guide policy v0 independently ranked B2
+the top unanswered UAP fork, agreeing with the map author's load-bearing note (THREADS §6).
+(2) *Saying why it matters now* — authored templates today; the genuine LLM upgrade is
+situational fluency (phrasing the why against the user's arrival claim and reactions;
+completion-shaped, so BYO tier-1 viable, viewer-billed). (3) *Pacing the arc* — depth vs.
+breadth vs. "you're ready to commit"; v0 is crude here (the stack-depth pop score), and a
+model could modulate it.
+
+The architectural point is already locked in §7: **policy v1 is an LLM re-ranker emitting
+the same typed ranked offers with linted `why` copy through the same channel** — a
+swappable implementation behind a stable interface. The rail renders v0 and v1 identically;
+curation risk stays managed because rank stays logged, inspectable, and linted. Cadence:
+model inference fires at *trigger boundaries* (the §10.4 triggers, wavering, dwell), never
+per-move — deterministic re-ranking already runs on every move for free. Periodic inference
+is optional fuel, not architecture.
+
+### 10.6 Staging (build candidate — not ordered)
+
+1. **Chrome migration** — commit + promise/reveal + notices into rail skeleton/banner;
+   carryback attaches to the resumed focus card; crumbs absorbed by the pinned origins.
+   Pure renderer shuffling; kills most sidebar height; lets us feel the direction cheaply.
+2. **Elicitation in place** — the ballot at forks; stance/react chip rows at facts;
+   relational chip rows deleted; sector members wear their payloads; `edgeWhy` along its
+   edge.
+3. **Focus card + center stage** — sidebar deleted; non-node frames become tethered
+   center-stage cards; the reveal becomes the whole-sheet overlay.
+
+Implementation notes: in-scene affordances are **HTML overlays positioned from scene
+coordinates**, not SVG text — keeping existing chip markup, CSS, wrapping, and the
+`role="button"`/keyboard delegation for free. Browser iteration loops run in a background
+agent (session memory). Open sub-questions: left vs. right rail; ballot geometry at high
+option counts; rail density on much larger maps; whether dismissing the reveal overlay is
+`focus(null)` or wants its own move.
+
+**Stage 1 shipped 2026-07-04** — built by a delegated background fork off
+`docs/plans/2026-07-04_journey-rail-stage1.md`; `npm test` 76/76; browser-validated
+end-to-end on both maps (walk, digression + carryback via rail notches, commit at the
+foot, Peruse contract, keyboard pass; the seal split checked programmatically — zero
+credence-derived emphasis pre-commit, `carrying` only after the reveal). `#register`
+banner + left journey rail (toolbar · top-3 offers in rank order · here-marker · promise
+notches · coverage dots · commit foot); `#panel` slimmed to frame + carryback;
+`crumbsHtml`/`commitBar`/`guideRail` retired. Build rulings worth keeping: (a) the rail
+expands as an **overlay** — in-flow expansion rescales the SVG scene on every hover, so
+the stage-3 focus card should be an overlay too; (b) **react rows were added to position
+frames** — the flagged emphasis keys on fork-target reactions, which previously had no UI
+entry point (react is engine-legal on any target; minimal one-line enabler); (c) expanded
+width 308px so the vetted commit label never truncates.
 
 ---
 
