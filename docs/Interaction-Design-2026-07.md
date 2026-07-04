@@ -133,6 +133,23 @@ knowledge demand signal. Session state carries known-entities so nothing is aske
 - PROTOCOL v1.2 frame ban applies to guide narration verbatim: describe what the map is doing,
   never what it is not.
 
+### 5.5 Surface vocabulary: "seal" is backstage language **[user ruling, 2026-07-04]**
+
+The pre-registration seal (Platform §5) keeps its name as a *mechanism*, but seal / sealed /
+unseal — and the padlock glyphs — never appear on the user surface. Custody language reads as
+the system locking your words away, which invites exactly the gotcha framing the tone work
+warns against. The surface speaks in two positive registers instead (working set, applied to
+the first renderer; not yet frozen):
+
+- **The arrival pair gets a promise** — "set it aside — we'll come back to this".
+- **Credence gets a reveal** — "where you land appears after you commit your answers";
+  the payoff moment is "the reveal". (The session engine's state flag is already `revealed` —
+  backstage and surface agree at the moment that matters.)
+
+Voice-linter rule: seal-words and 🔒/🔓 are banned from copy fields and guide narration.
+(A mechanical token ban in the linter is fine — the "lexical bans fail" finding is about
+steering model narration, not about checking authored artifacts.)
+
 ## 6. Facts — origin and stances
 
 ### 6.1 Origin is not review tier **[new — user-named]**
@@ -323,6 +340,24 @@ pinned by `test/session.test.ts` (20 cases); this list is the record. **[validat
 9. **Trust vs. contested edges.** A contested edge whose readings are backed by different
    authorities the user weighs differently — does the trust profile *suggest* a provisional
    reading (suppose-stance), or stay silent? Suggestion risks steering; silence wastes signal.
+10. **Idea on record — the coherence probe (entailment reveal).** Raised 2026-07-04; captured
+    as a *possibility*, not a chosen direction — no build weight attached. The idea: a user
+    expresses some beliefs, then is prompted with other, seemingly less-related forks — chosen
+    because certain combinations naturally narrow the space — so the surface can eventually
+    say "for those to all hold together, these further assumptions would have to hold — what
+    do you think of them?" Discussion notes, for whichever session weighs it: it echoes the
+    commit→reveal spine (a possible third gap — coherence — beside direction and confidence,
+    and a user-relative reading of assumption cost); much of it looks derivable
+    (counterfactual re-runs over unanswered positions yield the riders of a held outcome;
+    latent authored tensions could rank elicitation offers; riders would render via the
+    assumption face and route like disputes); tension flags are answer-structural, so
+    mid-walk friction surfacing would be seal-safe; a cross-map version could ride the
+    standards fingerprint; it resembles a single-player crux-finder (cf. the parked dyad
+    mode). If ever pursued: (a) the additive engine cannot honestly say "necessarily" —
+    lean-language or a deliberate hard-gate mechanic, same relative-honesty family as
+    supportedStrength/load language; (b) the register would need to be invitation, never
+    charge (silent-abandonment risk), with any conflict-seeking objective living in the
+    inspectable guide policy.
 
 ---
 

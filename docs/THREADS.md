@@ -14,7 +14,7 @@
 > revisit condition noted) · `RETIRED` (dead, with cause).
 
 _Last updated: 2026-07-04 (session: Arc A items 1–3 shipped — session engine v0, engine v0.2,
-content/schema v0.2)._
+content/schema v0.2; seal-vocabulary surface ruling)._
 
 ---
 
@@ -38,7 +38,8 @@ The agreed next arc (Interaction-Design §8):
 4. `BUILD` **Scene renderer on the session engine** — Mirror mode first; replaces both the
    first renderer's wall and the spike.
 5. `BUILD` **Voice linter, then LLM seams** — linter rule set now includes single-proposition
-   authoring rules; seams per Platform §2.5 gates.
+   authoring rules and the seal-word surface ban (Interaction §5.5); seams per Platform §2.5
+   gates.
 
 ## 2. Decided & locked
 
@@ -58,6 +59,9 @@ The agreed next arc (Interaction-Design §8):
 - `LOCKED` Authoring conventions: one insight one owner (fact-vs-rule double-dip;
   position-vs-trust-profile); single-barreled prompts; option labels are assertible
   propositions — UAP-Port-Notes §3; Interaction §5.4, §6.3
+- `LOCKED` "Seal" is backstage vocabulary — never a user-facing word (custody language invites
+  the gotcha frame); the surface speaks promise ("set it aside — we'll come back to this") and
+  reveal ("where you land appears after you commit") — Interaction §5.5
 
 ## 3. Open design threads (complementary)
 
@@ -89,6 +93,10 @@ The agreed next arc (Interaction-Design §8):
 - `OPEN` **Longitudinal metric & persistence** — strength/trust-word drift across snapshots;
   move log is the persistence unit; blocked behind privacy gate (seed §12.3) — Platform §8.7;
   Interaction §9.5
+- `OPEN` **Coherence probe / entailment reveal (idea, unweighed)** — recorded as a possibility,
+  not a direction: prompt seemingly-unrelated forks whose joint grant would commit the user to
+  derived riders, offered back as forks ("what do you think of Z?"). Discussion notes and
+  would-be constraints in Interaction §9.10 (raised 2026-07-04)
 - `OPEN` **B5b kind question** — is the secondhand discount a portable epistemic standard?
   Kept world-belief for now because F2/F3 must bear on it (I1); revisit if the cross-map
   fingerprint wants it — UAP-Port-Notes §6

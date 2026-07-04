@@ -107,10 +107,10 @@ function draftBanner(): string {
 
 function sealChip(): string {
   if (state.phase === 'payoff' && state.arrival) {
-    return `<div class="seal open">🔓 Unsealed — you arrived saying “${esc(state.arrival.claim)}”, held at “${STRENGTH_LABEL[state.strength!]}”.</div>`;
+    return `<div class="seal open">The reveal — you arrived saying “${esc(state.arrival.claim)}”, held at “${STRENGTH_LABEL[state.strength!]}”.</div>`;
   }
   if (state.arrival) {
-    return `<div class="seal">🔒 Your stated view is sealed. We’ll come back to it after your assumptions have spoken.</div>`;
+    return `<div class="seal">Your stated view is set aside — we’ll come back to it after your assumptions have spoken.</div>`;
   }
   if (state.skipped) {
     return `<div class="seal">You’re walking the map without a stated claim — the payoff will show where your assumptions land.</div>`;
@@ -179,7 +179,7 @@ function arrivalView(): string {
     <h2>How strongly do you hold it?</h2>
     <div class="chiprow">${strengths}</div>
     <div style="margin-top:22px; display:flex; gap:10px; flex-wrap:wrap;">
-      <button class="primary" data-act="seal" ${ready ? '' : 'disabled'}>Seal it — we’ll come back to this</button>
+      <button class="primary" data-act="seal" ${ready ? '' : 'disabled'}>Set it aside — we’ll come back to this</button>
       <button class="ghostbtn" data-act="skip">None of these fits — walk the map without a stated claim</button>
     </div>`;
 }
@@ -240,12 +240,12 @@ function elicitView(): string {
         <div class="layerhead">Layer 2 — evidence in your traversal</div>
         ${evidence}
         <div class="layerhead" style="margin-top:18px">Layer 3 — where it can land</div>
-        <div class="locked">🔒 Credence stays sealed until you commit your answers.</div>
+        <div class="locked">Where you land appears after you commit your answers.</div>
         ${outcomes}
       </div>
     </div>
     <div style="margin-top:18px; display:flex; gap:12px; align-items:center;">
-      <button class="primary" data-act="commit">Commit answers &amp; unseal</button>
+      <button class="primary" data-act="commit">Commit answers — see where you land</button>
       <span class="muted small">${'●'.repeat(answered)}${'○'.repeat(total - answered)} answered — commit whenever you’re ready; untouched forks stay at default.</span>
     </div>`;
 }
