@@ -157,40 +157,17 @@ Also affirmed early in the session: **epistemic standards promoted to a first-cl
 5. **Confidence-gap computation.** The direction gap falls out of the reducer; the confidence gap needs the engine to emit a *supported-confidence* level per hypothesis. What is that, formally, in the hybrid mechanic?
 6. **The tone experiment (Direction C).** ~~Still unrun.~~ Run 2026-07-04 — see `experiments/tone/RESULTS.md`. Verdict: GO. The gotcha failure mode did not appear; the observed failure cluster was over-accommodation (false balance under provocation, steelman fabrication, frame-denial), fixed as PROTOCOL v1.2 rules 9–14. Note the audience calibration: the appeasement findings matter *more* for the actual audience (self-selected rationality-aspirants, seed commitment 3) than the de-escalation findings — a curious self-examiner is failed by flattery, not by bluntness.
 7. **Longitudinal metric.** Strength is the trackable scalar across snapshots (direction rarely flips; strength drifts). What's the minimum persistence design that supports a six-month re-elicitation diff without prematurely forcing the accounts/privacy question (seed §12.3)?
-8. **BYO inference (raised 2026-07-04, exploratory — options recorded, no direction chosen).**
-   The product's LLM seams could run on the *user's own* model (their Claude subscription via
-   their own agent) rather than platform-paid inference. Three locked decisions make this the
-   near-native deployment shape: the LLM is backstage at gated seams only and phases 1–4 run
-   with zero model calls (base product ≈ free to serve); every seam output is a typed, linted,
-   confirm-gated artifact entering at draft tier wearing its origin (trust is model-agnostic);
-   and a session is a replayable move log (multi-client — user's agent proposes, the scene
-   confirms and renders — falls out of the persistence design). Option space: (a) **user's
-   agent as MCP client** (localhost first; hosted connector later reaches claude.ai users) with
-   seam-scoped tools — the leading shape; (b) product-inside-the-agent (npx + skill; zero
-   hosting, smaller audience, demand signal lost unless shared); (c) BYOK web (clean but
-   mismatched — consumers hold subscriptions, not API keys); (d) the **cache-and-review
-   flywheel**: first user's agent drafts a primer/expansion/map, linter + review promote it to
-   shared content — users donate generation, the platform pays only curation (resolves
-   Interaction §9.3's factory-vs-on-demand fork); (e) conversational elicitation revives as the
-   *user's* channel (their agent interviews, product receives typed moves — Direction C's risk
-   was an open channel on OUR model). Edges to hold: agent must be propose-only on soft inputs
-   (a model that answers forks mirrors the model, not the user); the seal is advisory against
-   the user's own computing agent (structure-only pre-commit resources can make spoiling
-   awkward, not impossible — accept this); third-party agent tone is out of lint jurisdiction
-   (ship frame-ban instructions with the connector, best-effort); never collect user
-   subscription tokens server-side (ToS); local shapes lose the move-log demand signal.
-   **The typing surface (the ergonomic crux):** two stable patterns, avoid the middle —
-   (1) *browser-primary, agent as worker*: the scene carries the text inputs; typed text lands
-   in the session store as a pending seam request; the user's agent runs a serve-loop and
-   writes confirm-gated proposals back (protocol-native mechanism is MCP sampling — client
-   support spotty today; a polling loop works now); (2) *terminal-primary, scene as shared
-   screen*: the user converses with their agent in one window while the scene is a passive
-   live view of the move log — one input surface, no toggling. The broken middle is two active
-   input surfaces (browser forks + terminal chat = alt-tab). The toggle only hurts mid-walk
-   seams (mediation, expansions); batch seams (draft a map, generate primers) are naturally
-   agent-side. The options compose, not compete: (a) is delivery, pattern 1/2 is ergonomics
-   inside it, (d) is the economic engine, (e) is a register (a) can grow into, (b) is the
-   zero-cost fallback and power-user story.
+8. **BYO inference — run the LLM seams on the user's own subscription (raised 2026-07-04,
+   exploratory).** The thread outgrew this list and graduated to its own doc:
+   **`docs/BYO-Inference-2026-07.md`** — the hard constraint (subscriptions spend only inside
+   Anthropic surfaces; token-borrowing banned and enforced), the verified mechanisms
+   (viewer-billed artifact embeds reach even our own domain; MCP Apps panels inside
+   claude.ai/ChatGPT; custom connectors), the seam split (completion-shaped seams can run
+   in-page viewer-billed; research must live where tools live), the candidate three-tier
+   architecture (door / chat tier / Claude Code workbench, one shared core), the
+   cache-and-review flywheel, and the edges (record sovereignty, advisory seal, tone
+   jurisdiction, platform dependence, demand signal). No direction chosen; build order
+   unchanged (the voice linter is the admission gate every tier needs).
 
 ## 9. Reasoning trail (this session's moves, preserved per seed §11 convention)
 
