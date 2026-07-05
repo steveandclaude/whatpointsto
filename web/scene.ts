@@ -47,13 +47,14 @@ import type {
 import {
   MODE_CONTRACTS,
   createSession,
-  guideOffers,
   reduceSession,
   sameTarget,
   targetKey,
 } from '../src/session.js';
 import { uapMap } from '../content/uap.js';
 import { singularityMap } from '../content/singularity.js';
+import { disclosure, journeyHorizon, journeyOffers, readiness } from '../src/journey.js';
+import type { Disclosure } from '../src/journey.js';
 
 // ---------------------------------------------------------------------------
 // App state — the session is the state; the rest is the door and the log.
@@ -76,6 +77,15 @@ const S = {
 let currentOffers: GuideOffer[] = [];
 /** Last reduce over the active workspace — retarget and frames read from it. */
 let lastResult: ReduceResult | null = null;
+/** R1 disclosure for the current state — recomputed every sync, stored nowhere else. */
+let lastDisclosure: Disclosure | null = null;
+/** Post-commit: the territory the walk actually drew (a pure re-derivation, §11 R3). */
+let walkedSet: ReadonlySet<string> | null = null;
+
+/** May the scene show this node? (No session / full disclosure ⇒ everything.) */
+function isDrawn(id: string): boolean {
+  return !lastDisclosure || lastDisclosure.full || lastDisclosure.drawn.has(id);
+}
 
 const STRENGTH_LABEL: Record<StrengthWord, string> = {
   lean: 'I lean this way',
@@ -560,15 +570,23 @@ function overviewTargets(dimTo: number, highlight: ReadonlySet<string>): void {
   for (const n of nodes.values()) {
     const home = HOME.get(n.id)!;
     const lit = highlight.has(n.id);
+    const drawn = isDrawn(n.id);
     n.tx = home.x; n.ty = home.y;
-    n.ts = lit ? 1.3 : 1;
-    n.to = highlight.size === 0 ? 1 : lit ? 1 : dimTo;
+    // Undrawn territory sits blank at a condensed scale, so first-draw is a
+    // pencil-in (fade + settle at the home position; REDUCED_MOTION snaps).
+    n.ts = !drawn ? 0.75 : lit ? 1.3 : 1;
+    n.to = !drawn ? 0 : highlight.size === 0 ? 1 : lit ? 1 : dimTo;
   }
   for (const e of gEdges) {
     const lit = highlight.has(e.a) && highlight.has(e.b);
-    e.to = highlight.size > 0 && lit ? 0.55 : e.kind === 'evidence' ? 0.06 : e.kind === 'contested' ? 0.3 : 0.14;
+    e.to =
+      !isDrawn(e.a) || !isDrawn(e.b)
+        ? 0
+        : highlight.size > 0 && lit ? 0.55 : e.kind === 'evidence' ? 0.06 : e.kind === 'contested' ? 0.3 : 0.14;
   }
   for (const q of S.map.questions) {
+    // A question captions the sheet only once some of its territory is drawn.
+    if (!S.map.outcomes.some((o) => o.question === q.id && isDrawn(o.id))) continue;
     const cx = QX.get(q.id);
     if (cx !== undefined) caption(q.title, cx, 42, 'qcaption');
   }
@@ -586,12 +604,15 @@ function retarget(): void {
   if (focus === null) {
     overviewTargets(0.35, new Set());
   } else if (!isNodeKind(focus)) {
-    overviewTargets(0.28, highlightIdsFor(focus));
+    overviewTargets(0.28, new Set([...highlightIdsFor(focus)].filter((id) => isDrawn(id))));
   } else {
     const fid = focus.id;
     const focusNode = nodes.get(fid);
     if (!focusNode) { overviewTargets(0.35, new Set()); return; }
-    const neighbors = [...(adj.get(fid) ?? [])].filter((n) => !stackNodeIds.includes(n) && n !== fid);
+    // Sectors are fog-limited too (§11 R1): evidence enters via present-fact.
+    const neighbors = [...(adj.get(fid) ?? [])].filter(
+      (n) => !stackNodeIds.includes(n) && n !== fid && isDrawn(n),
+    );
 
     const groups = new Map<Relation, string[]>();
     for (const nid of neighbors) {
@@ -629,13 +650,16 @@ function retarget(): void {
       } else {
         n.tx = home.x * 0.92 + FOCUS_PT.x * 0.08;
         n.ty = home.y * 0.92 + FOCUS_PT.y * 0.08;
-        n.ts = 0.5; n.to = 0.1;
+        n.ts = 0.5; n.to = isDrawn(n.id) ? 0.1 : 0;
       }
     }
     for (const e of gEdges) {
       const touchesFocus = e.a === fid || e.b === fid;
       const touchesStack = stackNodeIds.includes(e.a) || stackNodeIds.includes(e.b);
-      e.to = touchesFocus ? (e.kind === 'contested' ? 0.85 : 0.6) : touchesStack ? 0.2 : 0.04;
+      e.to =
+        !isDrawn(e.a) || !isDrawn(e.b)
+          ? 0
+          : touchesFocus ? (e.kind === 'contested' ? 0.85 : 0.6) : touchesStack ? 0.2 : 0.04;
     }
   }
 
@@ -668,6 +692,8 @@ function updateSceneClasses(res: ReduceResult): void {
     }
   }
   for (const n of nodes.values()) {
+    n.g.classList.toggle('undrawn', !isDrawn(n.id));
+    n.g.classList.toggle('unwalked', revealed() && walkedSet !== null && !walkedSet.has(n.id));
     n.g.classList.toggle('live', n.kind === 'fact' && live.has(n.id));
     n.g.classList.toggle('parked', n.kind === 'fact' && parked.has(n.id));
     n.g.classList.toggle('answered', n.kind === 'position' && n.id in ws.answers);
@@ -767,6 +793,12 @@ function dispatch(move: Move): void {
 function sync(): void {
   const ws = workspace();
   lastResult = reduce(S.map, ws.answers, ws.stances);
+  lastDisclosure = S.session ? disclosure(S.map, S.session, lastResult) : null;
+  // R3's spatial half: post-commit, walked territory is disclosure re-derived
+  // as if unrevealed — no snapshot exists anywhere (purity pays again).
+  walkedSet = S.session?.revealed
+    ? disclosure(S.map, { ...S.session, revealed: false, mode: 'mirror' }).drawn
+    : null;
   retarget();
   updateSceneClasses(lastResult);
   renderHeader();
@@ -823,8 +855,6 @@ function reactRow(target: FocusTarget): string {
 function frameOverview(res: ReduceResult): string {
   const session = S.session!;
   if (!revealed()) {
-    const answered = Object.keys(workspace().answers).length;
-    const total = S.map.positions.length;
     return `
       <h2>${esc(S.map.title)}</h2>
       ${S.map.questions
@@ -840,9 +870,9 @@ function frameOverview(res: ReduceResult): string {
         <span><span class="dot diamond" style="color:var(--fact)"></span>evidence</span>
       </div>
       <div class="muted small" style="margin-top:8px">
-        Glowing evidence is live in your traversal; green-ringed forks are ones you’ve answered.
-        Click anything to look closer.
-        ${session.mode === 'mirror' ? `You’ve answered ${'●'.repeat(answered)}${'○'.repeat(Math.max(0, total - answered))} — where you land appears after you commit.` : ''}
+        The sheet draws itself as you walk — glowing evidence is live in your traversal;
+        green-ringed forks are ones you’ve answered. Click anything drawn to look closer.
+        ${session.mode === 'mirror' ? `${esc(readiness(S.map, session).copy)} Where you land appears after you commit.` : ''}
       </div>`;
   }
 
@@ -928,14 +958,16 @@ function framePosition(p: PositionNode, res: ReduceResult): string {
         .map((o) => `<span class="chip">${esc(o.label)}</span>`)
         .join('')}</div><div class="muted small">Positions are taken in the walk — this is the looking-around view.</div>`;
 
-  const bearing = S.map.facts.filter((f) => f.bearsOn?.includes(p.id) && res.activeFacts.includes(f.id));
+  const bearing = S.map.facts.filter(
+    (f) => f.bearsOn?.includes(p.id) && res.activeFacts.includes(f.id) && isDrawn(f.id),
+  );
   const evidence = bearing.length
     ? `<h3>Evidence that speaks to this</h3><div class="chiprow">${bearing
         .map((f) => chip({ kind: 'fact', id: f.id }, shortOf(f.id)))
         .join('')}</div>`
     : '';
 
-  const feeds = [...(adj.get(p.id) ?? [])].filter((n) => nodes.get(n)?.kind === 'outcome');
+  const feeds = [...(adj.get(p.id) ?? [])].filter((n) => nodes.get(n)?.kind === 'outcome' && isDrawn(n));
   const pointsTo = feeds.length
     ? `<h3>Where this points</h3><div class="chiprow">${feeds
         .map((o) => chip({ kind: 'outcome', id: o }, shortOf(o)))
@@ -991,7 +1023,7 @@ function frameFact(f: FactNode, res: ReduceResult): string {
       }.</div>`
     : '';
 
-  const bearsOn = (f.bearsOn ?? []).filter((pid) => positionOf(pid));
+  const bearsOn = (f.bearsOn ?? []).filter((pid) => positionOf(pid) && isDrawn(pid));
   const speaks = bearsOn.length
     ? `<h3>This bears on</h3><div class="chiprow">${bearsOn
         .map((pid) => chip({ kind: 'position', id: pid }, shortOf(pid)))
@@ -1018,8 +1050,8 @@ function frameFact(f: FactNode, res: ReduceResult): string {
 
 function frameOutcome(o: OutcomeNode, res: ReduceResult): string {
   const ws = workspace();
-  const gates = [...(adj.get(o.id) ?? [])].filter((n) => nodes.get(n)?.kind === 'position');
-  const facts = [...(adj.get(o.id) ?? [])].filter((n) => nodes.get(n)?.kind === 'fact');
+  const gates = [...(adj.get(o.id) ?? [])].filter((n) => nodes.get(n)?.kind === 'position' && isDrawn(n));
+  const facts = [...(adj.get(o.id) ?? [])].filter((n) => nodes.get(n)?.kind === 'fact' && isDrawn(n));
 
   const rows = gates
     .map((g) => {
@@ -1126,7 +1158,7 @@ function frameTension(tensionId: string): string {
 }
 
 function frameQuestion(q: Question): string {
-  const members = S.map.outcomes.filter((o) => o.question === q.id);
+  const members = S.map.outcomes.filter((o) => o.question === q.id && isDrawn(o.id));
   return `<span class="badge">the question</span>
     <h2>${esc(q.title)}</h2>
     ${q.blurb ? `<div class="muted small">${esc(q.blurb)}</div>` : ''}
@@ -1334,25 +1366,101 @@ function renderRail(): void {
     `<button class="notch" data-act="start-over" title="start over"><span class="glyph">↺</span><span class="rlabel">start over</span></button>`,
   ].join('');
 
-  // AHEAD — rank order is the policy's, untouched (curation risk, §7); the
-  // renderer only drops offers pointing at the frame already on screen.
-  currentOffers = guideOffers(S.map, session)
-    .filter((o) => !(o.move.type === 'focus' && o.move.target !== null && sameTarget(session.focus, o.move.target)))
-    .slice(0, 3);
-  const offers = currentOffers
-    .map(
-      (o, i) =>
-        `<button class="notch" data-act="offer" data-i="${i}" title="${esc(`${offerLabel(o)} — ${o.why}`)}"><span class="glyph">›</span><span class="rlabel">${esc(shortOfferLabel(o))}</span></button>`,
-    )
+  // TRAIL — stops actually made, from the move log (§11 R2: the path behind
+  // is only where you have been; there is no census of what remains).
+  // Emphasis echoes the user's own signals; mulberry joins post-commit only.
+  const ws = workspace();
+  const wav = waveringIds();
+  const carrying = carryingId();
+  const trailTargets: FocusTarget[] = [];
+  for (const m of S.log) {
+    let t: FocusTarget | null = null;
+    if (m.type === 'focus' && m.target) t = m.target;
+    else if (m.type === 'push') t = m.target;
+    else if (m.type === 'present-fact') t = { kind: 'fact', id: m.fact };
+    else if (m.type === 'answer') t = { kind: 'position', id: m.position };
+    if (!t) continue;
+    const last = trailTargets[trailTargets.length - 1];
+    if (last && sameTarget(last, t)) continue;
+    trailTargets.push(t);
+  }
+  const trailNotches = trailTargets
+    .slice(-8) // display window only — the log keeps everything
+    .map((t) => {
+      const isPos = t.kind === 'position';
+      const flag = isPos ? flaggedReaction(t.id) : null;
+      const cls = [
+        'dotmark',
+        isPos && t.id in ws.answers ? 'answered' : '',
+        isPos && wav.has(t.id) ? 'waver' : '',
+        flag ? 'flagged' : '',
+        isPos && carrying === t.id ? 'carrying' : '',
+      ]
+        .filter(Boolean)
+        .join(' ');
+      const notes: string[] = [];
+      if (isPos && wav.has(t.id)) notes.push('you’ve changed this answer');
+      if (flag) notes.push(`you marked this: ${REACTION_LABEL[flag]}`);
+      if (isPos && carrying === t.id) notes.push('this answer is carrying your landing');
+      const title = notes.length ? `${targetLabel(t)} — ${notes.join(' · ')}` : targetLabel(t);
+      const glyph = isPos
+        ? `<span class="${cls}"></span>`
+        : t.kind === 'fact' ? '◇' : t.kind === 'outcome' ? '○' : '·';
+      return `<button class="notch" data-act="rail-focus" data-kind="${t.kind}" data-id="${esc(t.id)}" title="${esc(title)}"><span class="glyph">${glyph}</span><span class="rlabel">${esc(shortTargetLabel(t))}</span></button>`;
+    })
     .join('');
-  const ahead = offers
-    ? `<div class="railcap">the guide suggests</div>${offers}`
-    : `<div class="railcap">wander freely</div>`;
+  const trail = trailNotches ? `<div class="railcap">behind you</div>${trailNotches}` : '';
 
   // HERE.
   const here = `<div class="notch inert" title="${esc(session.focus ? targetLabel(session.focus) : 'the whole map')}"><span class="glyph">◉</span><span class="rlabel">${esc(
     session.focus ? shortTargetLabel(session.focus) : 'the whole map',
   )}</span></div>`;
+
+  // HORIZON — a forecast, not a plan (§11 R2): the nearest stop is named and
+  // clickable (it dispatches the policy's own top offer verbatim — curation
+  // risk, §7); later stops are shaped-but-not-named; then the fade. No
+  // terminal element, no end-cap — the path continues out of sight.
+  currentOffers = journeyOffers(S.map, session)
+    .filter((o) => !(o.move.type === 'focus' && o.move.target !== null && sameTarget(session.focus, o.move.target)))
+    .slice(0, 3);
+  const stopTargetOf = (o: GuideOffer): FocusTarget | null => {
+    const m = o.move;
+    if (m.type === 'focus' || m.type === 'push') return m.target;
+    if (m.type === 'present-fact') return { kind: 'fact', id: m.fact };
+    if (m.type === 'pop') return session.stack[session.stack.length - 1]?.origin ?? null;
+    return null;
+  };
+  const SHAPE_WORD: Record<string, string> = {
+    position: 'a fork',
+    fact: 'a piece of evidence',
+    outcome: 'a place it can land',
+    edge: 'a connection',
+    rule: 'something that moved beneath you',
+    tension: 'two answers in friction',
+    question: 'a question',
+    gap: 'part of the reveal',
+  };
+  const horizon = journeyHorizon(S.map, session, 3);
+  const horizonNotches = horizon
+    .map((stop, j) => {
+      if (stop.named) {
+        const i = currentOffers.findIndex((o) => {
+          const t = stopTargetOf(o);
+          return t !== null && sameTarget(t, stop.target);
+        });
+        if (i >= 0) {
+          const o = currentOffers[i]!;
+          return `<button class="notch" data-act="offer" data-i="${i}" title="${esc(`${offerLabel(o)} — ${o.why}`)}"><span class="glyph">›</span><span class="rlabel">${esc(shortOfferLabel(o))}</span></button>`;
+        }
+        return `<div class="notch inert"><span class="glyph">›</span><span class="rlabel">${esc(shortTargetLabel(stop.target))}</span></div>`;
+      }
+      // Shaped, not named — no title either: the fade keeps its secrets (§11 R2).
+      return `<div class="notch inert h-shaped fade${j}"><span class="glyph">›</span><span class="rlabel">${SHAPE_WORD[stop.kind] ?? 'a stop on the path'}</span></div>`;
+    })
+    .join('');
+  const ahead = horizonNotches
+    ? `<div class="railcap">ahead</div>${horizonNotches}`
+    : `<div class="railcap">wander freely</div>`;
 
   // PROMISES — open digressions; a notch click pops back to that promise.
   const promises = session.stack
@@ -1362,44 +1470,18 @@ function renderRail(): void {
     )
     .join('');
 
-  // COVERAGE — one dot per fork; emphasis echoes the user's own signals
-  // pre-commit; credence-derived emphasis joins only after the reveal (§10.3).
-  const ws = workspace();
-  const wav = waveringIds();
-  const carrying = carryingId();
-  const dots = S.map.positions
-    .map((p) => {
-      const flag = flaggedReaction(p.id);
-      const cls = [
-        'dotmark',
-        p.id in ws.answers ? 'answered' : '',
-        wav.has(p.id) ? 'waver' : '',
-        flag ? 'flagged' : '',
-        carrying === p.id ? 'carrying' : '',
-      ]
-        .filter(Boolean)
-        .join(' ');
-      const notes: string[] = [];
-      if (wav.has(p.id)) notes.push('you’ve changed this answer');
-      if (flag) notes.push(`you marked this: ${REACTION_LABEL[flag]}`);
-      if (carrying === p.id) notes.push('this answer is carrying your landing');
-      const title = notes.length ? `${shortOf(p.id)} — ${notes.join(' · ')}` : shortOf(p.id);
-      return `<button class="notch" data-act="rail-focus" data-id="${esc(p.id)}" title="${esc(title)}"><span class="glyph"><span class="${cls}"></span></span><span class="rlabel">${esc(shortOf(p.id))}</span></button>`;
-    })
-    .join('');
-
-  // FOOT — the walk leads down the trail to the inking moment.
+  // FOOT — the walk leads down the trail to the inking moment. Readiness is
+  // load words, never counts (§11 R3).
   let foot = '';
   if (session.mode === 'mirror' && !revealed()) {
-    const answered = Object.keys(session.record.answers).length;
-    const total = S.map.positions.length;
-    foot = `<div class="railfoot"><button class="notch primary" data-act="commit" title="commit whenever you’re ready; untouched forks stay at default"><span class="glyph">✓</span><span class="rlabel">Commit answers — see where you land</span></button><div class="progress rlabel">${'●'.repeat(answered)}${'○'.repeat(Math.max(0, total - answered))}</div></div>`;
+    const ready = readiness(S.map, session);
+    foot = `<div class="railfoot"><button class="notch primary" data-act="commit" title="commit whenever you’re ready; untouched forks stay at default"><span class="glyph">✓</span><span class="rlabel">Commit answers — see where you land</span></button><div class="readiness rlabel">${esc(ready.copy)}</div></div>`;
   } else if (revealed()) {
     foot = `<div class="railfoot"><div class="notch inert" title="the reveal is live"><span class="glyph revealmark">◆</span><span class="rlabel">the reveal is live</span></div></div>`;
   }
 
   rail.hidden = false;
-  rail.innerHTML = `${tools}<div class="railsep"></div>${ahead}<div class="railsep"></div>${here}${promises}<div class="railsep"></div><div class="railcap">the forks</div>${dots}${foot}`;
+  rail.innerHTML = `${tools}<div class="railsep"></div>${trail}${here}${ahead}<div class="railsep"></div>${promises}${foot}`;
 }
 
 function renderBanner(): void {
@@ -1598,7 +1680,10 @@ document.body.addEventListener('click', (ev) => {
     }
     case 'rail-focus': {
       // Rail navigation wanders (plain focus) — it never makes a promise (§10.3).
-      const target: FocusTarget = { kind: 'position', id: elx.dataset['id']! };
+      const target: FocusTarget = {
+        kind: (elx.dataset['kind'] as FocusTarget['kind']) ?? 'position',
+        id: elx.dataset['id']!,
+      };
       if (!sameTarget(S.session?.focus ?? null, target)) dispatch({ type: 'focus', target });
       break;
     }

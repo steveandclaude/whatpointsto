@@ -21,7 +21,9 @@ immediately mined a new thread: the **generative journey** (rules, not scripts) 
 beats as the seal miniaturized; R1 drawn-by-walking disclosure (blank beyond the thread);
 R2 fade-horizon rail, superseding stage 1's census dots; R3 proposed (readiness words;
 commit lifts the fog); LLM as bounded sequencer toward named states. Captured in new
-Interaction §11)._
+Interaction §11. Sixth: J1+J2 shipped by a delegated fork — disclosure fog, trail +
+fade-horizon rail, readiness words, fog-lift at commit; 88/88; four renderer/engine
+findings in §6; R3's ratification is the user's phone walk)._
 
 ---
 
@@ -171,7 +173,11 @@ The agreed next arc (Interaction-Design §8):
   Delivery vehicle for the reflex-ghost / coherence-probe / answer-shape threads.
   Rule-mining ongoing — Interaction §11. Ruled same day: journey is Mirror's default
   entry; J1 (engine) + J2 (renderer) build ordered —
-  docs/plans/2026-07-04_journey-j1-j2.md
+  docs/plans/2026-07-04_journey-j1-j2.md — **J1+J2 shipped same day** (delegated fork;
+  88/88; fog / trail + fade horizon / readiness words / fog-lift commit live on both
+  maps; R3 awaits the user's walk; shipped marker + build rulings in Interaction §11.5;
+  four findings below). Next: the user walks the deploy and mines rules; J3 (surprises
+  tags + probe beats) is the content session after that
 - `OPEN` **Linter coverage of renderer-embedded copy** — the scene renderer speaks promise/
   reveal copy as code literals (`web/scene.ts`, `web/index.html`) the artifact linter can't
   see; eyeball discipline for now; revisit if a string-extraction or copy-table pass earns
@@ -266,6 +272,21 @@ The agreed next arc (Interaction-Design §8):
   right after arrival the scene showed the full constellation, and the map's own author
   read it as zoomed-out overload — §1's attention problem survives at session start; fixed
   by design as §11 R1 (drawn-by-walking) — 2026-07-04.
+- The drawn sheet reflects current commitments, not history: disclosure derives from
+  state, so changing an answer can undraw the old option's consequences — felt right in
+  the browser (the sheet redraws to what you now hold), but the semantics matter before
+  J3 probes re-ask forks — src/journey.ts, 2026-07-04.
+- The journey's no-leak rule needs exactly two doors — `present-fact` (evidence is how
+  new territory enters) and dispute routes (the user's own objection made walkable);
+  filter either and the walk deadlocks. Any future offer family (probes included) enters
+  through the same doors — src/journey.ts, 2026-07-04.
+- Count-shaped copy accretes at commit-adjacent surfaces: a second census (the overview
+  frame's answered-dots line) hid behind the commit bar's; §11 R3's no-counts rule caught
+  it — web/scene.ts, 2026-07-04.
+- Unwalked + front-runner compose into a free payoff: post-commit a front-running landing
+  can render in faint pencil — "your leading landing rests on forks you never met" — the
+  confidence gap made spatial with zero new machinery; kept deliberately — web/scene.ts,
+  2026-07-04.
 
 ## 7. Retired
 

@@ -758,6 +758,23 @@ reveal-overlay mechanism; authoring conventions for the surprises tag (what evid
 establishes "commonly assumed"?); whether probe density wants a per-session cap
 (fatigue).
 
+**J1+J2 shipped 2026-07-04** (delegated fork; 88/88; browser-validated on both maps with
+zero console messages; Peruse round-trip restores the fog). `src/journey.ts` — the pure
+core: `neighbors`, `disclosure {drawn, frontier, full}` (R1), `journeyOffers` (guide
+policy v0 + the no-leak filter), `journeyHorizon` (status-quo forecast, k=3),
+`readiness` (load words, never counts); the seal is pinned by a basePrior-variant
+disclosure test. Renderer: fog + pencil-in entrances; the rail becomes trail (last-8
+window) → here → horizon → promises → readiness foot; **the named horizon stop IS the
+policy's top offer** — ranks 2–3 render shaped-not-named per R2, absorbing the old
+three-offer list (reading order is still rank order; revisit if the shaped ranks ever
+feel like curation opacity); commit lifts the fog with walked-vs-unwalked *re-derived*
+from pre-commit disclosure, never snapshotted. Build rulings: active facts draw only
+adjacent to drawn territory (baseline facts otherwise flood R1's near-blank arrival —
+the verification contract outranked the plan's literal wording); the no-leak rule keeps
+exactly two doors, `present-fact` and dispute routes; `SessionState.presented` already
+existed, so session.ts is untouched; `gateWeight` is temporarily duplicated in
+journey.ts (consolidation queued). R3 is built — its ratification is the walk itself.
+
 ---
 
 *Companions: `Platform-Design-2026-07.md` (platform frame; §2.5 is the parent decision),
