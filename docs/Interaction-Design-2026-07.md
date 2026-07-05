@@ -382,7 +382,8 @@ pinned by `test/session.test.ts` (20 cases); this list is the record. **[validat
    touches A), yet people arrive believing the AARO fork bears on A — that misbelief is the
    map's signature lesson. Should naive-redirect adjacency render as a distinct ghost sector —
    "commonly thought to rest on — the map disagrees"? (Leading candidate: yes, ghost-styled,
-   linking to R3's frame.)
+   linking to R3's frame.) *(Delivery vehicle candidate found 2026-07-04: the generative
+   journey's probe beats — §11.)*
 2. **Load-language thresholds.** Magnitude → "load-bearing / supporting / background" needs the
    same honesty treatment as `supportedStrength` (Platform-Design §8.5) — relative to the map,
    not absolute cuts.
@@ -419,7 +420,8 @@ pinned by `test/session.test.ts` (20 cases); this list is the record. **[validat
     lean-language or a deliberate hard-gate mechanic, same relative-honesty family as
     supportedStrength/load language; (b) the register would need to be invitation, never
     charge (silent-abandonment risk), with any conflict-seeking objective living in the
-    inspectable guide policy.
+    inspectable guide policy. *(Delivery vehicle candidate found 2026-07-04: the generative
+    journey's left-field probes — §11.)*
 11. **Idea on record — the answer-shape probe (keeper-shape refinement).** Raised 2026-07-04;
     captured as a *possibility*, not a chosen direction — no build weight attached. The idea:
     a user who answers a fork is often answering against an implicit *shape* of the
@@ -439,7 +441,8 @@ pinned by `test/session.test.ts` (20 cases); this list is the record. **[validat
     Overlaps §9.10's coherence probe in spirit ("what your answers haven't yet covered") but
     is narrower and fully authorable, so it could ship as content long before derived
     machinery. Register: invitation, never charge — the leak prior isn't wrong; the map is
-    showing the claim's actual shape. Frame ban applies verbatim.
+    showing the claim's actual shape. Frame ban applies verbatim. *(Delivery vehicle
+    candidate found 2026-07-04: the generative journey — §11.)*
 12. **Idea on record — dissolving the panel into the scene (focus-adjacent rendering).**
     Raised 2026-07-04, right after the light-register redesign; captured as a *possibility*,
     not a chosen direction — no build weight attached; the user wants a dedicated session on
@@ -571,6 +574,9 @@ transcript made visible; the guide policy is the interlocutor choosing the next 
   policy can then stop re-offering visited frames, or re-offer deliberately.
 - Scale caveat: dot-per-fork suits curated maps (UAP: 11); revisit density past ~20 forks.
 
+*(2026-07-04, later: §11 R2 revises the coverage zone — the census dots give way to the
+trail + fade-horizon path.)*
+
 ### 10.4 Seam invitations — the counterweight, designed
 
 §9.12(h) made concrete: a new guide-offer family whose triggers are structural,
@@ -641,6 +647,116 @@ the stage-3 focus card should be an overlay too; (b) **react rows were added to 
 frames** — the flagged emphasis keys on fork-target reactions, which previously had no UI
 entry point (react is engine-legal on any target; minimal one-line enabler); (c) expanded
 width 308px so the vetted commit label never truncates.
+
+## 11. The journey — a generative walk, not a script
+
+**[captured 2026-07-04, from the first remote walk-through (the Pages deploy, same day);
+R1–R2 user-affirmed, R3 proposed; rule-mining ongoing — this section accretes as
+commentary continues]**
+
+### 11.1 The gap the walk-through exposed
+
+Guide policy v0 is a counselor, not an itinerary: it ranks the locally best next move, so
+it is always coherent and never composed — no warm-up, no escalation, no deliberate
+left-field beat, no setup-then-payoff. Mirror's contract promises "guided, one focus at a
+time"; what shipped is self-directed-with-advice. The imagined experience (user): be
+walked stop by stop, one thing at a time, mostly sensible, occasionally a question out of
+left field — because the walk is checking whether the user is confident about something
+demonstrably wrong, and then showing them the fact. UAP's signature instance: most
+visitors confidently hold "there's nothing new here" and have never met the dated record
+(sworn congressional testimony; the 2017 NYT disclosures).
+
+Ruled out in the same conversation: authored story scripts. The ask is **rules and schema
+that architect the dynamics** — nobody writes the plot. This reframes §7's move library:
+its artifacts become beat templates and eligibility tags, not hand-authored sequences.
+
+### 11.2 The probe beat — the seal, miniaturized
+
+The three-beat template: **elicit a small commitment → reveal the fact → re-ask (or
+react)**. It lands because the user answered first — commit-then-reveal is the product
+thesis applied at stop scale, and it is seal-safe throughout (facts are authored
+structure; what gets revealed is the user's own prior meeting the record). Register:
+invitation, never charge — the fact does the confronting in world-reporting voice; guide
+copy stays PROTOCOL-bound. **Both-directions requirement:** a journey must surprise the
+dismissive skeptic (testimony under oath) and the confident believer (the contested
+F3/F10 readings) with the same mechanics, or it is a conversion funnel rather than a
+mirror.
+
+The journey is the delivery vehicle three recorded ideas were waiting for: the reflex
+ghost (§9.1 — confidently-assumed-but-wrong adjacency), the coherence probe (§9.10 —
+deliberately non-local prompts), and the answer-shape probe (§9.11 — correct the implicit
+shape with a fact).
+
+### 11.3 The generative architecture
+
+A journey is (disclosure rule × beat grammar × eligibility tags × rhythm rule), with an
+optional LLM sequencer on top. The deterministic core:
+
+- **Beat grammar** — *decide* (focus a fork, answer), *read* (present a fact or edge,
+  react or stance), *probe* (the three-beat above): typed, lintable templates,
+  instantiated from the graph — never from a script.
+- **Eligibility as schema** — a fact may declare which held option it surprises (a small,
+  authorable, lintable field; kin to §9.1's naive-redirect adjacency). Probe trigger =
+  the user holds the surprised option ∧ the fact's strength qualifies — structural and
+  inspectable, the same trigger family as §10.4's seam invitations.
+- **Rhythm rule** — N frontier stops, then a probe if one is eligible: the
+  mostly-coherent-with-occasional-left-field texture, deterministically schedulable.
+- **The journey is a guide-policy variant** through the same typed-offer channel
+  (§10.5's swap slot): a journey policy emits the next stop as the top offer with beat
+  copy as the why. The walk, the rail, the moves, the seal — untouched.
+
+**LLM uplift, bounded (§2.5 posture — the graph is the menu):** the deterministic core
+produces a frontier of a few legal stops; the model (a) chooses among them toward
+**named, inspectable target states** — curiosity, productive surprise, reconsideration;
+never a destination — and (b) writes the transition voice ("that answer makes this next
+question matter — it will feel unrelated; stay with me"). Sensor = the explicit react log
+(`surprising` is the applause meter; a run of nothing-but-makes-sense is the boredom
+detector). Every output is a typed offer with lintable copy.
+
+### 11.4 Disclosure rules — the mined ledger
+
+Mined from live walk commentary; each felt-wrongness converts to a rule candidate.
+
+- **R1 — the map is drawn by walking it** [user-affirmed]. Post-arrival the sheet is
+  nearly blank: one penciled thread — the claim's outcome and the top-gate-weight fork
+  beneath it. Each answer draws its consequences (activated edges sketch in, facts that
+  went live appear, the next fork pencils in at the frontier). Beyond the drawn
+  territory: **blank** (ruled — no silhouettes). Commit inks what was drawn.
+  Blank→pencil→ink: the walk draws the map, the reckoning scores it. Stable geography
+  holds — things appear only at their home positions. Seal-safe: §4.1 *permits* structure
+  pre-commit, never requires it. Whole-territory viewing is Peruse's register; the full
+  overview inside Mirror was a register leak (provenance: the first phone walk landed on
+  the full constellation right after arrival — §1's wall at minute zero).
+- **R2 — the rail is a path, not a census** [user-affirmed]. Trail behind = only stops
+  actually made; horizon ahead = up to X stops, then **fade — never an end**. No
+  deterministic step count: journey length is conditional (probes fire on holdings,
+  disputes and want-mores add stops), so any census claims a false denominator.
+  Resolution gradient across the horizon: next stop named → then shaped-but-not-named
+  ("something about sensor evidence") → mist. The horizon is a pure-lookahead **forecast,
+  not a plan**, recomputed every move; visible rerouting in the fade zone is a feature —
+  the path is seen responding to answers. *(Supersedes stage 1's coverage census — one
+  dot per fork from minute one — when the journey builds.)*
+- **R3 — readiness in words; commit lifts the fog** [proposed, leaning yes]. The commit
+  affordance drops counts for load-language readiness ("most of what your claim rests on
+  is still unasked" → "you've spoken to the load-bearing forks"). At commit the whole
+  sheet finally appears — inked where walked, faint pencil where defaulted — the
+  confidence gap made spatial: *here is what your landing takes on faith.* Mystery
+  belongs to the walk, not the verdict.
+
+### 11.5 Method and open questions
+
+The method is rule-mining: the user walks the live build and narrates every moment that
+feels wrong; each felt-wrongness converts to a rule candidate. Two comments produced R1
+and R2. Ongoing — this section accretes.
+
+Ruled 2026-07-04 (build go-ahead): **the journey is Mirror's default entry** — free
+wandering survives inside drawn territory, with Peruse one gesture away (interacts with
+§9.4). R1–R3 enter the J1/J2 build (docs/plans/2026-07-04_journey-j1-j2.md); R3's
+ratification is the walk itself. Still open: the X value and fade curve; the
+register of shaped-not-named teaser copy; whether R3's fog-lift shares §10.6's
+reveal-overlay mechanism; authoring conventions for the surprises tag (what evidence bar
+establishes "commonly assumed"?); whether probe density wants a per-session cap
+(fatigue).
 
 ---
 

@@ -13,21 +13,15 @@
 > complementary) · `TENSION` (countervailing pair, kept alive on purpose) · `PARKED` (deliberate,
 > revisit condition noted) · `RETIRED` (dead, with cause).
 
-_Last updated: 2026-07-04 (session: voice linter shipped — src/lint.ts, errors fail
-`npm test` / warnings print for review, design record in Interaction §5.6; first real
-findings are two double-barrel warnings on the singularity draft's labels; §1 item 5 is now
-half done — LLM seams are next. Same day, later: scene renderer visual register redesigned
-to light mode on a user brief — surveyor's-sheet register, penciled→inked reveal, no
-truncated panel copy; record in Interaction §8.4; singularity gained draft-tier
-shortLabels. New §3 idea captured, unweighed: dissolve the panel into the scene,
-click-to-surface options in place — Interaction §9.12. Third session, same day: that
-dedicated exploration ran — dissolution direction user-affirmed: content goes home to its
-object; three organs (scene / focus card / **journey rail**) + register banner; the rail is
-the walk made visible; seam-invitation offer family designed, defining the LLM seams' entry
-points, so the seams build is unblocked; design record in new Interaction §10. Fourth:
-stage 1 of the dissolution built by a delegated fork — journey rail + register banner +
-slimmed panel, 76/76, browser-validated on both maps; overlay-not-reflow ruling; build
-plan docs/plans/2026-07-04_journey-rail-stage1.md; three renderer findings in §6)._
+_Last updated: 2026-07-04 (fifth update today — earlier batches, all committed: voice
+linter; light-register redesign; §10 dissolution design; rail stage 1 built by a delegated
+fork. This batch: **shipped online** — repo public, GitHub Pages auto-deploy on push,
+https://steveandclaude.github.io/whatpointsto/ — and the first remote walk-through
+immediately mined a new thread: the **generative journey** (rules, not scripts) — probe
+beats as the seal miniaturized; R1 drawn-by-walking disclosure (blank beyond the thread);
+R2 fade-horizon rail, superseding stage 1's census dots; R3 proposed (readiness words;
+commit lifts the fog); LLM as bounded sequencer toward named states. Captured in new
+Interaction §11)._
 
 ---
 
@@ -93,7 +87,8 @@ The agreed next arc (Interaction-Design §8):
 - `OPEN` **Knowledge checks & primers** — authoring pipeline (factory vs on-demand);
   known-entity session state — Interaction §5.3, §9.3
 - `OPEN` **Reflex-relation ghost sector** — render naive-redirect adjacency as "commonly thought
-  to rest on — the map disagrees" — Interaction §9.1
+  to rest on — the map disagrees" — Interaction §9.1 — delivery vehicle candidate: the
+  generative journey (Interaction §11)
 - `OPEN` **Load language** — magnitude → load-bearing/supporting/background words; needs
   relative-not-absolute honesty — Interaction §5.2, §9.2
 - `OPEN` **Confidence-gap formalization** — `supportedStrength` thresholds are a flagged fake;
@@ -126,14 +121,16 @@ The agreed next arc (Interaction-Design §8):
 - `OPEN` **Coherence probe / entailment reveal (idea, unweighed)** — recorded as a possibility,
   not a direction: prompt seemingly-unrelated forks whose joint grant would commit the user to
   derived riders, offered back as forks ("what do you think of Z?"). Discussion notes and
-  would-be constraints in Interaction §9.10 (raised 2026-07-04)
+  would-be constraints in Interaction §9.10 (raised 2026-07-04) — delivery vehicle
+  candidate: the generative journey's left-field probes (Interaction §11)
 - `OPEN` **Answer-shape probe / keeper-shape refinement (idea, unweighed)** — recorded as a
   possibility, not a direction: an answer is often given against an implicit shape of the
   proposition ("secrets leak" imagines a government keeper), while live testimony asserts a
   different shape (private contractors, highly compartmented); offer the variant shape back as
   a fork ("could that shape of truth be viable?"). Candidate homes (content decomposition of
   B4 / authored follow-up relation = first move-library artifact / answer-conditional guide
-  offers) and constraints in Interaction §9.11 (raised 2026-07-04)
+  offers) and constraints in Interaction §9.11 (raised 2026-07-04) — delivery vehicle
+  candidate: the generative journey (Interaction §11)
 - `OPEN` **B5b kind question** — is the secondhand discount a portable epistemic standard?
   Kept world-belief for now because F2/F3 must bear on it (I1); revisit if the cross-map
   fingerprint wants it — UAP-Port-Notes §6
@@ -162,6 +159,19 @@ The agreed next arc (Interaction-Design §8):
   register banner + slimmed panel, built by a delegated fork off
   docs/plans/2026-07-04_journey-rail-stage1.md, browser-validated both maps; rulings +
   findings in the §10.6 shipped marker
+- `OPEN` **The generative journey (rules, not scripts)** — found in the first remote
+  walk-through, 2026-07-04: the walk should be a composed journey without anyone scripting
+  it — beat grammar (decide / read / probe→reveal→re-ask: the seal miniaturized),
+  fact-level `surprises` eligibility tags, a rhythm rule for left-field texture, and a
+  journey policy as a guide-policy variant through the same typed-offer channel; LLM as
+  bounded sequencer toward named states (§2.5 menu posture; the react log as sensor).
+  Disclosure rulings user-affirmed: R1 drawn-by-walking (blank beyond the thread; the full
+  overview inside Mirror was a register leak), R2 fade-horizon rail (path not census —
+  supersedes stage-1 coverage dots), R3 proposed (readiness words; commit lifts the fog).
+  Delivery vehicle for the reflex-ghost / coherence-probe / answer-shape threads.
+  Rule-mining ongoing — Interaction §11. Ruled same day: journey is Mirror's default
+  entry; J1 (engine) + J2 (renderer) build ordered —
+  docs/plans/2026-07-04_journey-j1-j2.md
 - `OPEN` **Linter coverage of renderer-embedded copy** — the scene renderer speaks promise/
   reveal copy as code literals (`web/scene.ts`, `web/index.html`) the artifact linter can't
   see; eyeball discipline for now; revisit if a string-extraction or copy-table pass earns
@@ -252,6 +262,10 @@ The agreed next arc (Interaction-Design §8):
   whole SVG viewBox (~20% scene wobble); absolute-overlay expansion keeps scene geometry
   still — the stage-3 focus card is an overlay candidate for the same reason —
   web/index.html, 2026-07-04.
+- The first remote walk-through (Pages deploy, on a phone) surfaced the minute-zero wall:
+  right after arrival the scene showed the full constellation, and the map's own author
+  read it as zoomed-out overload — §1's attention problem survives at session start; fixed
+  by design as §11 R1 (drawn-by-walking) — 2026-07-04.
 
 ## 7. Retired
 

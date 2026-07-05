@@ -12,6 +12,9 @@ the singularity scaffold the second.
   Windows note: the glob form in package.json is required; `node --test dist/test/` fails here.
 - `npm run web` — build + dev server at http://localhost:8137/ (the scene renderer,
   `web/scene.ts`, driven by the session engine; the first renderer and the spike are retired).
+- Live build: https://steveandclaude.github.io/whatpointsto/ — public repo
+  `steveandclaude/whatpointsto`; GitHub Pages redeploys on every push to `main`
+  (`.github/workflows/pages.yml`).
 
 ## Doc tree — read in this order
 
