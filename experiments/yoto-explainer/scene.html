@@ -737,7 +737,7 @@ function sOutro(t) {
 
 // ---------------------------------------------------------------- captions + countdown
 function captions(t) {
-  if (t >= S.outro.start - .2) return;
+  if (!TL.draft && t >= S.outro.start - .2) return;
   let cur = null;
   for (const s of TL.scenes) for (const b of s.beats) if (t >= b.t - .05 && t <= b.t + b.d + .25) cur = b;
   if (!cur) return;
@@ -776,6 +776,7 @@ function draw(t) {
   background(t);
   sHook(t); sSources(t); sFormats(t); sLimits(t); sPlaylist(t); sIcons(t); sLink(t); sBonus(t); sOutro(t);
   captions(t); countdown(t);
+  if (TL.draft) { ctx.save(); ctx.globalAlpha = .9; fillRR(800, 18, 320, 44, 22, C.berry); text('DRAFT · no voiceover yet', 960, 41, 24, C.white, { weight: 700 }); ctx.restore(); }
   // vignette + fade from/to black
   const fade = 1 - clamp(t / .35) * clamp((CUE.total - t) / .6);
   if (fade > 0) { ctx.fillStyle = `rgba(29,27,34,${fade})`; ctx.fillRect(0, 0, W, H); }

@@ -14,6 +14,7 @@ const BUILD = join(HERE, 'build');
 const FPS = 30;
 const tl = JSON.parse(readFileSync(join(BUILD, 'timeline.json')));
 const cue = JSON.parse(readFileSync(join(BUILD, 'cues.json')));
+const OUT = tl.draft ? 'yoto-explainer-draft.mp4' : 'yoto-explainer.mp4';
 
 const args = process.argv.slice(2);
 const stills = args[0] === '--stills' ? args[1].split(',').map(Number) : null;
@@ -44,7 +45,7 @@ if (stills) {
   console.log(`${frames} frames in ${((Date.now() - t0) / 1000).toFixed(0)}s`);
   execFileSync('ffmpeg', ['-y', '-hide_banner', '-loglevel', 'error', '-framerate', String(FPS), '-i', join(dir, 'f%05d.png'),
     '-i', join(BUILD, 'mix.wav'), '-c:v', 'libx264', '-preset', 'slow', '-crf', '18', '-pix_fmt', 'yuv420p', '-tune', 'animation',
-    '-c:a', 'aac', '-b:a', '192k', '-shortest', '-movflags', '+faststart', join(HERE, 'yoto-explainer.mp4')], { stdio: 'inherit' });
-  console.log('wrote yoto-explainer.mp4');
+    '-c:a', 'aac', '-b:a', '192k', '-shortest', '-movflags', '+faststart', join(HERE, OUT)], { stdio: 'inherit' });
+  console.log('wrote ' + OUT);
 }
 await browser.close();

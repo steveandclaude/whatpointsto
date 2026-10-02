@@ -20,6 +20,9 @@ Not wired into the repo's package.json, so the main project gains no dependencie
 python3 -m venv venv && venv/bin/pip install kokoro-onnx soundfile
 # model: onnx-community/Kokoro-82M-v1.0-ONNX on Hugging Face — onnx/model.onnx + voices/af_heart.bin
 # pack voices: np.savez("voices.npz", af_heart=np.fromfile("af_heart.bin", np.float32).reshape(-1,1,256))
+# 1. draft: subtitles only, no voice (timings estimated from text) -> yoto-explainer-draft.mp4
+venv/bin/python draft.py && venv/bin/python mix.py && node render.mjs
+# 2. after the script (SCRIPT.md) is approved: voiced cut -> yoto-explainer.mp4
 KOKORO_DIR=/path/to/kokoro venv/bin/python tts.py
 venv/bin/python mix.py
 node render.mjs                    # needs playwright + ffmpeg; ~5 min
