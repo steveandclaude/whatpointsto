@@ -1,0 +1,17 @@
+{
+  "voice": "af_heart",
+  "speed": 1.0,
+  "lead_in": 0.8,
+  "beat_gap": 0.28,
+  "scenes": [
+    { "id": "hook",     "pad": 0.5, "beats": ["This is a blank card.", "Sixty seconds from now, it'll play anything you want."] },
+    { "id": "sources",  "pad": 0.4, "beats": ["Start with the audio.", "Record yourself in the Yoto app,", "use MP3s you own,", "or grab free public-domain stories from Lib-ri-vox and Yoto Space."] },
+    { "id": "formats",  "pad": 0.4, "beats": ["Stick to MP3 or M4A.", "Convert WAV or FLAC first.", "For stories, ninety-six kilobit mono is plenty."] },
+    { "id": "limits",   "pad": 0.4, "beats": ["Each card holds a hundred tracks,", "five hours,", "five hundred megabytes.", "Any one track? An hour, max."] },
+    { "id": "playlist", "pad": 0.4, "beats": ["In the app, tap Make Your Own, then New Playlist.", "Upload,", "drag into order,", "and name it."] },
+    { "id": "icons",    "pad": 0.4, "beats": ["Give every track a sixteen-pixel icon.", "Thousands of free ones live at Yoto icons dot com."] },
+    { "id": "link",     "pad": 1.7, "beats": ["Tap Link to a Card,", "slide the blank card in, and..."] },
+    { "id": "bonus",    "pad": 0.4, "beats": ["Bonus: paste a podcast's RSS feed,", "and the card fills itself with new episodes."] },
+    { "id": "outro",    "pad": 2.6, "beats": ["Your audio.", "Your card.", "Made in a minute."] }
+  ]
+}
